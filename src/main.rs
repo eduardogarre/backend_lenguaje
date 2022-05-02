@@ -6,6 +6,8 @@ use rocket::http::Header;
 use rocket::{Request, Response};
 use std::path::{Path, PathBuf};
 
+// Configura CORS
+
 pub struct CORS;
 
 #[rocket::async_trait]
@@ -27,6 +29,10 @@ impl Fairing for CORS {
         response.set_header(Header::new("Access-Control-Allow-Credentials", "true"));
     }
 }
+
+/**
+ * Puntos de acceso de la API
+ */
 
 #[get("/documentos")]
 fn lee_documentos() -> &'static str {
@@ -53,6 +59,10 @@ fn borra_documento(id: u64) -> std::string::String {
     return format!("Borra el documento {}", id);
 }
 
+/**
+ * Puntos de acceso para los archivos estáticos
+ */
+
 #[get("/", rank = 2)]
 async fn archivo_raiz() -> Option<NamedFile> {
     NamedFile::open(Path::new("static/").join("index.html"))
@@ -74,6 +84,17 @@ async fn archivos(archivo: PathBuf) -> Option<NamedFile> {
         .ok()
 }
 
+#[get("/<archivo..>", rank = 4)]
+async fn archivos_predeterminado(archivo: PathBuf) -> Option<NamedFile> {
+    NamedFile::open(Path::new("static/").join("index.html"))
+        .await
+        .ok()
+}
+
+/**
+ * Monta todos los puntos de acceso
+ */
+
 #[launch]
 fn rocket() -> _ {
     rocket::build()
@@ -88,7 +109,15 @@ fn rocket() -> _ {
                 borra_documento
             ],
         )
-        .mount("/", routes![archivo_raiz, archivo_index_htm, archivos])
+        .mount(
+            "/",
+            routes![
+                archivo_raiz,
+                archivo_index_htm,
+                archivos,
+                archivos_predeterminado
+            ],
+        )
 }
 
 /*
