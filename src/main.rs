@@ -1,10 +1,17 @@
+use std::borrow::Cow;
+use std::path::{Path, PathBuf};
+
 #[macro_use]
 extern crate rocket;
+
 use rocket::fairing::{Fairing, Info, Kind};
 use rocket::fs::NamedFile;
 use rocket::http::Header;
+use rocket::serde::json::{json, Json, Value};
+use rocket::serde::{Deserialize, Serialize};
+use rocket::tokio::sync::Mutex;
+use rocket::State;
 use rocket::{Request, Response};
-use std::path::{Path, PathBuf};
 
 // Configura CORS
 
@@ -34,6 +41,20 @@ impl Fairing for CORS {
  * Puntos de acceso de la API
  */
 
+// El tipo con el que represento el identificador de un mensaje
+type Id = usize;
+
+// Por ahora voy a guardar todos los documentos aquí, para no usar una BBDD.
+type ListaDocumentos = Mutex<Vec<String>>;
+type Documentos<'r> = &'r State<ListaDocumentos>;
+
+#[derive(Serialize, Deserialize)]
+#[serde(crate = "rocket::serde")]
+struct Documento<'r> {
+    id: Option<Id>,
+    contenido: Cow<'r, str>,
+}
+
 #[get("/documentos")]
 fn lee_documentos() -> &'static str {
     "{
@@ -45,14 +66,22 @@ fn lee_documentos() -> &'static str {
     }"
 }
 
-#[post("/documento")]
-fn crea_documento() -> &'static str {
-    "Crea un nuevo documento"
+#[post("/documento", format = "json", data = "<documento>")]
+async fn crea_documento(documento: Json<Documento<'_>>, lista: Documentos<'_>) -> Value {
+    let mut lista = lista.lock().await;
+    let id = lista.len();
+    lista.push(documento.contenido.to_string());
+    json!({ "estado": "ok", "id": id })
 }
 
-#[get("/documento/<id>")]
-fn lee_documento(id: u64) -> std::string::String {
-    return format!("Lee el documento {}", id);
+#[get("/documento/<id>", format = "json")]
+async fn lee_documento(id: Id, list: Documentos<'_>) -> Option<Json<Documento<'_>>> {
+    let list = list.lock().await;
+
+    Some(Json(Documento {
+        id: Some(id),
+        contenido: list.get(id)?.to_string().into(),
+    }))
 }
 
 #[patch("/documento/<id>")]
@@ -101,29 +130,35 @@ async fn archivos_predeterminado(archivo: PathBuf) -> Option<NamedFile> {
  * Monta todos los puntos de acceso
  */
 
+fn stage() -> rocket::fairing::AdHoc {
+    rocket::fairing::AdHoc::on_ignite("JSON", |rocket| async {
+        rocket
+            .mount(
+                "/api/v1/",
+                routes![
+                    lee_documentos,
+                    crea_documento,
+                    lee_documento,
+                    cambia_documento,
+                    borra_documento
+                ],
+            )
+            .mount(
+                "/",
+                routes![
+                    archivo_raiz,
+                    archivo_index_htm,
+                    archivos,
+                    archivos_predeterminado
+                ],
+            )
+            .manage(ListaDocumentos::new(vec![]))
+    })
+}
+
 #[launch]
 fn rocket() -> _ {
-    rocket::build()
-        .attach(CORS)
-        .mount(
-            "/api/v1/",
-            routes![
-                lee_documentos,
-                crea_documento,
-                lee_documento,
-                cambia_documento,
-                borra_documento
-            ],
-        )
-        .mount(
-            "/",
-            routes![
-                archivo_raiz,
-                archivo_index_htm,
-                archivos,
-                archivos_predeterminado
-            ],
-        )
+    rocket::build().attach(CORS).attach(stage())
 }
 
 /*
