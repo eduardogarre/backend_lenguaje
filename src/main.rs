@@ -36,7 +36,13 @@ impl Fairing for CORS {
 
 #[get("/documentos")]
 fn lee_documentos() -> &'static str {
-    "Lista de documentos"
+    "{
+        \"arr\": [
+            \"Lista\",
+            \"de\",
+            \"documentos\"
+            ]
+    }"
 }
 
 #[post("/documento")]
@@ -65,28 +71,28 @@ fn borra_documento(id: u64) -> std::string::String {
 
 #[get("/", rank = 2)]
 async fn archivo_raiz() -> Option<NamedFile> {
-    NamedFile::open(Path::new("static/").join("index.html"))
+    NamedFile::open(Path::new("build/").join("index.html"))
         .await
         .ok()
 }
 
 #[get("/index.htm", rank = 2)]
 async fn archivo_index_htm() -> Option<NamedFile> {
-    NamedFile::open(Path::new("static/").join("index.html"))
+    NamedFile::open(Path::new("build/").join("index.html"))
         .await
         .ok()
 }
 
 #[get("/<archivo..>", rank = 3)]
 async fn archivos(archivo: PathBuf) -> Option<NamedFile> {
-    NamedFile::open(Path::new("static/").join(archivo))
+    NamedFile::open(Path::new("build/").join(archivo))
         .await
         .ok()
 }
 
 #[get("/<archivo..>", rank = 4)]
 async fn archivos_predeterminado(archivo: PathBuf) -> Option<NamedFile> {
-    NamedFile::open(Path::new("static/").join("index.html"))
+    NamedFile::open(Path::new("build/").join("index.html"))
         .await
         .ok()
 }
