@@ -90,7 +90,10 @@ async fn lee_documentos(lista: &State<Documentos>) -> Option<Json<ListaDocumento
     let lista = lista.lock().await;
     let l = (*lista).clone();
 
-    Some(Json(ListaDocumento { estado: "ok".to_string(), documentos: l }))
+    Some(Json(ListaDocumento {
+        estado: "ok".to_string(),
+        documentos: l,
+    }))
 }
 
 #[post("/documento", format = "json", data = "<documento>")]
@@ -127,9 +130,21 @@ async fn lee_documento(id: Id, lista: &State<Documentos>) -> Option<Json<Documen
     }))
 }
 
-#[patch("/documento/<id>")]
-fn cambia_documento(id: Id) -> std::string::String {
-    return format!("Cambia el documento {}", id);
+#[patch("/documento/<id>", format = "json", data = "<documento>")]
+async fn cambia_documento(
+    id: Id,
+    documento: Json<Documento>,
+    lista: &State<Documentos>,
+) -> Option<Json<Documento>> {
+    let mut lista = lista.lock().await;
+    let doc = documento.into_inner();
+    let i = lista.iter().position(|d| d.id == id).unwrap();
+    (*lista)[i].padre = doc.padre;
+    (*lista)[i].título = doc.título;
+    (*lista)[i].párrafos = doc.párrafos;
+    (*lista)[i].hijos = doc.hijos;
+
+    return Some(Json((*lista)[i].clone()));
 }
 
 #[delete("/documento/<id>")]
