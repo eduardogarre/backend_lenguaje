@@ -44,15 +44,35 @@ impl Fairing for CORS {
 // El tipo con el que represento el identificador de un mensaje
 type Id = usize;
 
+static mut CONTADOR_IDS: Id = 0;
+
+unsafe fn lee_nuevo_id() -> Id {
+    CONTADOR_IDS = CONTADOR_IDS + 1;
+    let id: Id = CONTADOR_IDS;
+    return id;
+}
+
 // Por ahora voy a guardar todos los documentos aquí, para no usar una BBDD.
-type ListaDocumentos = Mutex<Vec<String>>;
-type Documentos<'r> = &'r State<ListaDocumentos>;
+type Documentos = Mutex<Vec<Documento>>;
 
 #[derive(Serialize, Deserialize)]
 #[serde(crate = "rocket::serde")]
-struct Documento<'r> {
-    id: Option<Id>,
-    contenido: Cow<'r, str>,
+struct Documento {
+    id: Id,
+    título: String,
+    párrafos: Vec<String>,
+    hijos: Vec<Id>,
+}
+
+impl Clone for Documento {
+    fn clone(&self) -> Self {
+        Documento {
+            id: self.id.clone(),
+            título: self.título.clone(),
+            párrafos: self.párrafos.clone(),
+            hijos: self.hijos.clone(),
+        }
+    }
 }
 
 #[get("/documentos")]
@@ -67,20 +87,32 @@ fn lee_documentos() -> &'static str {
 }
 
 #[post("/documento", format = "json", data = "<documento>")]
-async fn crea_documento(documento: Json<Documento<'_>>, lista: Documentos<'_>) -> Value {
+async fn crea_documento(documento: Json<Documento>, lista: &State<Documentos>) -> Value {
     let mut lista = lista.lock().await;
-    let id = lista.len();
-    lista.push(documento.contenido.to_string());
-    json!({ "estado": "ok", "id": id })
+    let identificador: Id;
+
+    unsafe {
+        identificador = lee_nuevo_id();
+    }
+
+    let mut doc = documento.into_inner();
+    doc.id = identificador;
+
+    lista.push(doc);
+
+    json!({ "estado": "ok", "id": Some(identificador) })
 }
 
 #[get("/documento/<id>", format = "json")]
-async fn lee_documento(id: Id, list: Documentos<'_>) -> Option<Json<Documento<'_>>> {
-    let list = list.lock().await;
-
+async fn lee_documento(id: Id, lista: &State<Documentos>) -> Option<Json<Documento>> {
+    let lista = lista.lock().await;
+    let i = lista.iter().position(|d| d.id == id).unwrap();
+    let doc: Documento = lista[i].clone();
     Some(Json(Documento {
-        id: Some(id),
-        contenido: list.get(id)?.to_string().into(),
+        id: doc.id,
+        título: doc.título.clone(),
+        párrafos: doc.párrafos.clone(),
+        hijos: doc.hijos.clone(),
     }))
 }
 
@@ -152,7 +184,7 @@ fn stage() -> rocket::fairing::AdHoc {
                     archivos_predeterminado
                 ],
             )
-            .manage(ListaDocumentos::new(vec![]))
+            .manage(Documentos::new(vec![]))
     })
 }
 
