@@ -47,8 +47,8 @@ type Id = usize;
 static mut CONTADOR_IDS: Id = 0;
 
 unsafe fn lee_nuevo_id() -> Id {
-    CONTADOR_IDS = CONTADOR_IDS + 1;
     let id: Id = CONTADOR_IDS;
+    CONTADOR_IDS = CONTADOR_IDS + 1;
     return id;
 }
 
@@ -64,6 +64,12 @@ struct Documento {
     hijos: Vec<Id>,
 }
 
+#[derive(Serialize, Deserialize)]
+#[serde(crate = "rocket::serde")]
+struct ListaDocumento {
+    documentos: Vec<Documento>
+}
+
 impl Clone for Documento {
     fn clone(&self) -> Self {
         Documento {
@@ -75,8 +81,8 @@ impl Clone for Documento {
     }
 }
 
-#[get("/documentos")]
-fn lee_documentos() -> &'static str {
+#[get("/documentos2")]
+fn lee_documentos2() -> &'static str {
     "{
         \"arr\": [
             \"Lista\",
@@ -84,6 +90,14 @@ fn lee_documentos() -> &'static str {
             \"documentos\"
             ]
     }"
+}
+
+#[get("/documentos")]
+async fn lee_documentos(lista: &State<Documentos>) -> Option<Json<ListaDocumento>> {
+    let lista = lista.lock().await;
+    let l = (*lista).clone();
+    
+    Some(Json(ListaDocumento {documentos: l}))
 }
 
 #[post("/documento", format = "json", data = "<documento>")]
@@ -169,6 +183,7 @@ fn stage() -> rocket::fairing::AdHoc {
                 "/api/v1/",
                 routes![
                     lee_documentos,
+                    lee_documentos2,
                     crea_documento,
                     lee_documento,
                     cambia_documento,
