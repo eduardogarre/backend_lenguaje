@@ -69,6 +69,7 @@ struct Documento {
 #[derive(Serialize, Deserialize)]
 #[serde(crate = "rocket::serde")]
 struct ListaDocumento {
+    estado: String,
     documentos: Vec<Documento>,
 }
 
@@ -89,7 +90,7 @@ async fn lee_documentos(lista: &State<Documentos>) -> Option<Json<ListaDocumento
     let lista = lista.lock().await;
     let l = (*lista).clone();
 
-    Some(Json(ListaDocumento { documentos: l }))
+    Some(Json(ListaDocumento { estado: "ok".to_string(), documentos: l }))
 }
 
 #[post("/documento", format = "json", data = "<documento>")]
@@ -134,6 +135,24 @@ fn cambia_documento(id: u64) -> std::string::String {
 #[delete("/documento/<id>")]
 fn borra_documento(id: u64) -> std::string::String {
     return format!("Borra el documento {}", id);
+}
+
+#[catch(404)]
+fn error_404() -> Value {
+    json!({
+        "estado": "error",
+        "código": 404,
+        "mensaje": "Recurso no encontrado."
+    })
+}
+
+#[catch(500)]
+fn error_500() -> Value {
+    json!({
+        "estado": "error",
+        "código": 500,
+        "mensaje": "Error interno."
+    })
 }
 
 /**
@@ -185,6 +204,7 @@ fn stage() -> rocket::fairing::AdHoc {
                     borra_documento
                 ],
             )
+            .register("/api/v1/", catchers![error_404, error_500])
             .mount(
                 "/",
                 routes![
@@ -195,6 +215,7 @@ fn stage() -> rocket::fairing::AdHoc {
                 ],
             )
             .manage(Documentos::new(vec![Documento {
+                // Nodo inicial
                 id: 0,
                 padre: 0,
                 título: String::new(),
