@@ -81,17 +81,6 @@ impl Clone for Documento {
     }
 }
 
-#[get("/documentos2")]
-fn lee_documentos2() -> &'static str {
-    "{
-        \"arr\": [
-            \"Lista\",
-            \"de\",
-            \"documentos\"
-            ]
-    }"
-}
-
 #[get("/documentos")]
 async fn lee_documentos(lista: &State<Documentos>) -> Option<Json<ListaDocumento>> {
     let lista = lista.lock().await;
@@ -183,7 +172,6 @@ fn stage() -> rocket::fairing::AdHoc {
                 "/api/v1/",
                 routes![
                     lee_documentos,
-                    lee_documentos2,
                     crea_documento,
                     lee_documento,
                     cambia_documento,
