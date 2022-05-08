@@ -62,7 +62,7 @@ struct Documento {
     id: Id,
     padre: Id,
     título: String,
-    párrafos: Vec<String>,
+    contenido: String,
     hijos: Vec<Id>,
 }
 
@@ -79,7 +79,7 @@ impl Clone for Documento {
             id: self.id.clone(),
             padre: self.padre.clone(),
             título: self.título.clone(),
-            párrafos: self.párrafos.clone(),
+            contenido: self.contenido.clone(),
             hijos: self.hijos.clone(),
         }
     }
@@ -125,7 +125,7 @@ async fn lee_documento(id: Id, lista: &State<Documentos>) -> Option<Json<Documen
         id: doc.id,
         padre: doc.padre,
         título: doc.título.clone(),
-        párrafos: doc.párrafos.clone(),
+        contenido: doc.contenido.clone(),
         hijos: doc.hijos.clone(),
     }))
 }
@@ -141,7 +141,7 @@ async fn cambia_documento(
     let i = lista.iter().position(|d| d.id == id).unwrap();
     (*lista)[i].padre = doc.padre;
     (*lista)[i].título = doc.título;
-    (*lista)[i].párrafos = doc.párrafos;
+    (*lista)[i].contenido = doc.contenido;
     (*lista)[i].hijos = doc.hijos;
 
     return Some(Json((*lista)[i].clone()));
@@ -240,6 +240,15 @@ fn stage() -> rocket::fairing::AdHoc {
     rocket::fairing::AdHoc::on_ignite("JSON", |rocket| async {
         rocket
             .mount(
+                "/",
+                routes![
+                    archivo_raiz,
+                    archivo_index_htm,
+                    archivos,
+                    archivos_predeterminado
+                ],
+            )
+            .mount(
                 "/api/v1/",
                 routes![
                     lee_documentos,
@@ -250,21 +259,12 @@ fn stage() -> rocket::fairing::AdHoc {
                 ],
             )
             .register("/api/v1/", catchers![error_404, error_500])
-            .mount(
-                "/",
-                routes![
-                    archivo_raiz,
-                    archivo_index_htm,
-                    archivos,
-                    archivos_predeterminado
-                ],
-            )
             .manage(Documentos::new(vec![Documento {
                 // Nodo inicial
                 id: 0,
                 padre: 0,
                 título: String::new(),
-                párrafos: vec![],
+                contenido: String::new(),
                 hijos: vec![],
             }]))
     })
