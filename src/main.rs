@@ -44,7 +44,8 @@ impl Fairing for CORS {
 // El tipo con el que represento el identificador de un mensaje
 type Id = usize;
 
-static mut CONTADOR_IDS: Id = 0;
+// Ya existe el nodo 0
+static mut CONTADOR_IDS: Id = 1;
 
 unsafe fn lee_nuevo_id() -> Id {
     let id: Id = CONTADOR_IDS;
@@ -59,6 +60,7 @@ type Documentos = Mutex<Vec<Documento>>;
 #[serde(crate = "rocket::serde")]
 struct Documento {
     id: Id,
+    padre: Id,
     título: String,
     párrafos: Vec<String>,
     hijos: Vec<Id>,
@@ -67,13 +69,14 @@ struct Documento {
 #[derive(Serialize, Deserialize)]
 #[serde(crate = "rocket::serde")]
 struct ListaDocumento {
-    documentos: Vec<Documento>
+    documentos: Vec<Documento>,
 }
 
 impl Clone for Documento {
     fn clone(&self) -> Self {
         Documento {
             id: self.id.clone(),
+            padre: self.padre.clone(),
             título: self.título.clone(),
             párrafos: self.párrafos.clone(),
             hijos: self.hijos.clone(),
@@ -85,8 +88,8 @@ impl Clone for Documento {
 async fn lee_documentos(lista: &State<Documentos>) -> Option<Json<ListaDocumento>> {
     let lista = lista.lock().await;
     let l = (*lista).clone();
-    
-    Some(Json(ListaDocumento {documentos: l}))
+
+    Some(Json(ListaDocumento { documentos: l }))
 }
 
 #[post("/documento", format = "json", data = "<documento>")]
@@ -113,6 +116,7 @@ async fn lee_documento(id: Id, lista: &State<Documentos>) -> Option<Json<Documen
     let doc: Documento = lista[i].clone();
     Some(Json(Documento {
         id: doc.id,
+        padre: doc.padre,
         título: doc.título.clone(),
         párrafos: doc.párrafos.clone(),
         hijos: doc.hijos.clone(),
@@ -187,7 +191,13 @@ fn stage() -> rocket::fairing::AdHoc {
                     archivos_predeterminado
                 ],
             )
-            .manage(Documentos::new(vec![]))
+            .manage(Documentos::new(vec![Documento {
+                id: 0,
+                padre: 0,
+                título: String::new(),
+                párrafos: vec![],
+                hijos: vec![],
+            }]))
     })
 }
 
