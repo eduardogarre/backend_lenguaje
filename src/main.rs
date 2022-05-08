@@ -219,17 +219,24 @@ async fn archivo_index_htm() -> Option<NamedFile> {
 
 #[get("/<archivo..>", rank = 3)]
 async fn archivos(archivo: PathBuf) -> Option<NamedFile> {
-    NamedFile::open(Path::new("build/").join(archivo))
+    let arch = NamedFile::open(Path::new("build/").join(archivo)).await;
+    let resultado = match arch {
+        Ok(a)  => a,
+        Err(e) => return NamedFile::open(Path::new("build/").join("index.html"))
         .await
         .ok()
+    };
+    return Some(resultado);
 }
 
+/*
 #[get("/<archivo..>", rank = 4)]
 async fn archivos_predeterminado(archivo: PathBuf) -> Option<NamedFile> {
     NamedFile::open(Path::new("build/").join("index.html"))
         .await
         .ok()
 }
+*/
 
 /**
  * Monta todos los puntos de acceso
@@ -244,7 +251,7 @@ fn stage() -> rocket::fairing::AdHoc {
                     archivo_raiz,
                     archivo_index_htm,
                     archivos,
-                    archivos_predeterminado
+                    //archivos_predeterminado
                 ],
             )
             .mount(
