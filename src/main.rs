@@ -104,6 +104,9 @@ async fn crea_documento(documento: Json<Documento>, lista: &State<Documentos>) -
     let mut doc = documento.into_inner();
     doc.id = identificador;
 
+    let id_padre = lista.iter().position(|d| d.id == doc.padre).unwrap();
+    lista[id_padre].hijos.push(identificador);
+
     lista.push(doc);
 
     json!({ "estado": "ok", "id": Some(identificador) })
