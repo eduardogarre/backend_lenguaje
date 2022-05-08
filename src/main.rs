@@ -128,12 +128,12 @@ async fn lee_documento(id: Id, lista: &State<Documentos>) -> Option<Json<Documen
 }
 
 #[patch("/documento/<id>")]
-fn cambia_documento(id: u64) -> std::string::String {
+fn cambia_documento(id: Id) -> std::string::String {
     return format!("Cambia el documento {}", id);
 }
 
 #[delete("/documento/<id>")]
-fn borra_documento(id: u64) -> std::string::String {
+fn borra_documento(id: Id) -> std::string::String {
     return format!("Borra el documento {}", id);
 }
 
