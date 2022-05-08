@@ -1,16 +1,15 @@
 ## defaults for _all_ profiles
 [default]
+port = 80
 address = "0.0.0.0"
 limits = { forms = "8 MiB", json = "8 MiB" }
 
 ## set only when compiled in debug mode, i.e, `cargo build`
 [debug]
-port = 80
 ## only the `json` key from `default` will be overridden; `forms` will remain
 limits = { json = "16 MiB" }
 
 ## set only when compiled in release mode, i.e, `cargo build --release`
 ## don't use this secret_key! generate your own and keep it private!
 [release]
-port = 80
-secret_key = "IUs3NOzlzqglMk3jl5vgkUJQ2gF/9d0j4lFI/01hGc0="
+#secret_key = "IUs3NOzlzqglMk3jl5vgkUJQ2gF/9d0j4lFI/01hGc0="
