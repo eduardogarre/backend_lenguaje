@@ -160,6 +160,14 @@ async fn borra_documento(id: Id, lista: &State<Documentos>) -> Value {
     }
 
     if (i != 0) {
+        let id_padre = lista.iter().position(|d| d.id == lista[i].padre).unwrap();
+
+        (*lista)[id_padre].hijos = lista[id_padre]
+            .hijos
+            .drain(..)
+            .filter(|id_hijo| *id_hijo != i)
+            .collect();
+
         lista.remove(i);
         return json!({
             "estado": "ok",
