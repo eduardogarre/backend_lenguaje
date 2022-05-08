@@ -148,8 +148,30 @@ async fn cambia_documento(
 }
 
 #[delete("/documento/<id>")]
-fn borra_documento(id: Id) -> std::string::String {
-    return format!("Borra el documento {}", id);
+async fn borra_documento(id: Id, lista: &State<Documentos>) -> Value {
+    let mut lista = lista.lock().await;
+    let i = lista.iter().position(|d| d.id == id).unwrap();
+    if ((*lista)[i].hijos.len() != 0) {
+        return json!({
+            "estado": "error",
+            "código": 405,
+            "mensaje": "Método no permitido, no puedes borrar un nodo que tenga hijos."
+        });
+    }
+
+    if (i != 0) {
+        lista.remove(i);
+        return json!({
+            "estado": "ok",
+            "código": 200
+        });
+    } else {
+        return json!({
+            "estado": "error",
+            "código": 405,
+            "mensaje": "Método no permitido, no puedes borrar el nodo raíz."
+        });
+    }
 }
 
 #[catch(404)]
