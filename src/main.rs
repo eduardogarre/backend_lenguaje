@@ -221,10 +221,12 @@ async fn archivo_index_htm() -> Option<NamedFile> {
 async fn archivos(archivo: PathBuf) -> Option<NamedFile> {
     let arch = NamedFile::open(Path::new("build/").join(archivo)).await;
     let resultado = match arch {
-        Ok(a)  => a,
-        Err(e) => return NamedFile::open(Path::new("build/").join("index.html"))
-        .await
-        .ok()
+        Ok(a) => a,
+        Err(_e) => {
+            return NamedFile::open(Path::new("build/").join("index.html"))
+                .await
+                .ok()
+        }
     };
     return Some(resultado);
 }
