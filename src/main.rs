@@ -180,7 +180,7 @@ async fn borra_documento(id: Id, lista: &State<Documentos>) -> Value {
 
         let j: String = serde_json::to_string_pretty(&(*lista)).unwrap();
         guarda_copia_documentos(j).await;
-        
+
         return json!({
             "estado": "ok",
             "código": 200
@@ -249,22 +249,52 @@ async fn archivos(archivo: PathBuf) -> Option<NamedFile> {
  */
 
 fn stage() -> rocket::fairing::AdHoc {
+    // Documento raíz, nodo 0
+    let doc_raíz: Documento = Documento {
+        // Nodo inicial
+        id: 0,
+        padre: 0,
+        título: String::new(),
+        contenido: String::new(),
+        hijos: vec![],
+    };
+
+    // Intento cargar documentos previos
     let archivo = std::fs::read_to_string("documentos.json");
 
     let documentos: Vec<Documento> = match archivo {
         Ok(contenido) => {
-            println!("{}", contenido);
-            serde_json::from_str::<Vec<Documento>>(&contenido).unwrap()
+            // Si he podido leer el archivo, intento procesarlo como JSON
+            let v: Vec<Documento> = serde_json::from_str::<Vec<Documento>>(&contenido).unwrap();
+            // Si me ha dejado procesarlo como JSON, intento encontrar el ID más grande
+            let max_id_doc = v.iter().max_by_key(|doc| doc.id);
+            match max_id_doc {
+                // Si encuentra el ID más grande...
+                Some(doc) => {
+                    // establezco el contador de IDs...
+                    unsafe {
+                        CONTADOR_IDS = doc.id + 1;
+                    }
+                    // y devuelvo el vector de documentos
+                    v
+                }
+                None => {
+                    // El vector estaba vacío o no era válido...
+                    unsafe {
+                        // inicio el contador de IDs...
+                        CONTADOR_IDS = 1;
+                    }
+                    // y cargo el nodo raíz
+                    vec![doc_raíz]
+                }
+            }
         }
         Err(_e) => {
-            vec![Documento {
-                // Nodo inicial
-                id: 0,
-                padre: 0,
-                título: String::new(),
-                contenido: String::new(),
-                hijos: vec![],
-            }]
+            // Si hay error al abrir los documentos, creo un nodo 0 inicial y establezco el contador de IDs a 0
+            unsafe {
+                CONTADOR_IDS = 1;
+            }
+            vec![doc_raíz]
         }
     };
 
