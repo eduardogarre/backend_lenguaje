@@ -89,15 +89,12 @@ impl Clone for Documento {
     }
 }
 
-#[get("/documentos")]
-async fn lee_documentos(lista: &State<Documentos>) -> Option<Json<ListaDocumento>> {
+#[get("/documentos", format = "json")]
+async fn lee_documentos(lista: &State<Documentos>) -> String {
     let lista = lista.lock().await;
-    let l = (*lista).clone();
 
-    Some(Json(ListaDocumento {
-        estado: "ok".to_string(),
-        documentos: l,
-    }))
+    let j: String = serde_json::to_string_pretty(&(*lista)).unwrap();
+    return j;
 }
 
 #[post("/documento", format = "json", data = "<documento>")]
