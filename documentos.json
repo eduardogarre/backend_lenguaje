@@ -5,43 +5,11 @@
     "título": "",
     "contenido": "",
     "hijos": [
-      2,
-      3,
-      4,
-      1,
-      5
+      1
     ]
   },
   {
-    "id": 2,
-    "padre": 0,
-    "título": "Hola",
-    "contenido": "",
-    "hijos": []
-  },
-  {
-    "id": 3,
-    "padre": 0,
-    "título": "Hola",
-    "contenido": "",
-    "hijos": []
-  },
-  {
-    "id": 4,
-    "padre": 0,
-    "título": "Hola",
-    "contenido": "",
-    "hijos": []
-  },
-  {
     "id": 1,
-    "padre": 0,
-    "título": "Adiós",
-    "contenido": "olakase",
-    "hijos": []
-  },
-  {
-    "id": 5,
     "padre": 0,
     "título": "Hola",
     "contenido": "",
