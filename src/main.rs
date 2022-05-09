@@ -229,15 +229,6 @@ async fn archivos(archivo: PathBuf) -> Option<NamedFile> {
     return Some(resultado);
 }
 
-/*
-#[get("/<archivo..>", rank = 4)]
-async fn archivos_predeterminado(archivo: PathBuf) -> Option<NamedFile> {
-    NamedFile::open(Path::new("build/").join("index.html"))
-        .await
-        .ok()
-}
-*/
-
 /**
  * Monta todos los puntos de acceso
  */
@@ -280,15 +271,3 @@ fn stage() -> rocket::fairing::AdHoc {
 fn rocket() -> _ {
     rocket::build().attach(CORS).attach(stage())
 }
-
-/*
-
-GET                 /api/v1/tutoriales
-POST                /api/v1/tutorial
-GET/PATCH/DELETE   /api/v1/tutorial/:id
-
-GET                 /api/v1/referencias
-POST                /api/v1/referencia
-GET/PATCH/DELETE   /api/v1/referencia/:id
-
-*/
