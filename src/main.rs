@@ -116,7 +116,6 @@ async fn crea_documento(documento: Json<Documento>, lista: &State<Documentos>) -
     lista.push(doc);
 
     let j: String = serde_json::to_string_pretty(&(*lista)).unwrap();
-
     guarda_copia_documentos(j).await;
 
     json!({ "estado": "ok", "id": Some(identificador) })
@@ -150,6 +149,9 @@ async fn cambia_documento(
     (*lista)[i].contenido = doc.contenido;
     (*lista)[i].hijos = doc.hijos;
 
+    let j: String = serde_json::to_string_pretty(&(*lista)).unwrap();
+    guarda_copia_documentos(j).await;
+
     return Some(Json((*lista)[i].clone()));
 }
 
@@ -175,6 +177,10 @@ async fn borra_documento(id: Id, lista: &State<Documentos>) -> Value {
             .collect();
 
         lista.remove(i);
+
+        let j: String = serde_json::to_string_pretty(&(*lista)).unwrap();
+        guarda_copia_documentos(j).await;
+        
         return json!({
             "estado": "ok",
             "código": 200

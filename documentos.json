@@ -5,18 +5,11 @@
     "título": "",
     "contenido": "",
     "hijos": [
-      1,
       2,
       3,
-      4
+      4,
+      1
     ]
-  },
-  {
-    "id": 1,
-    "padre": 0,
-    "título": "Hola",
-    "contenido": "",
-    "hijos": []
   },
   {
     "id": 2,
@@ -37,6 +30,13 @@
     "padre": 0,
     "título": "Hola",
     "contenido": "",
+    "hijos": []
+  },
+  {
+    "id": 1,
+    "padre": 0,
+    "título": "Adiós",
+    "contenido": "olakase",
     "hijos": []
   }
 ]
