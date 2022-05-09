@@ -1,0 +1,42 @@
+[
+  {
+    "id": 0,
+    "padre": 0,
+    "título": "",
+    "contenido": "",
+    "hijos": [
+      1,
+      2,
+      3,
+      4
+    ]
+  },
+  {
+    "id": 1,
+    "padre": 0,
+    "título": "Hola",
+    "contenido": "",
+    "hijos": []
+  },
+  {
+    "id": 2,
+    "padre": 0,
+    "título": "Hola",
+    "contenido": "",
+    "hijos": []
+  },
+  {
+    "id": 3,
+    "padre": 0,
+    "título": "Hola",
+    "contenido": "",
+    "hijos": []
+  },
+  {
+    "id": 4,
+    "padre": 0,
+    "título": "Hola",
+    "contenido": "",
+    "hijos": []
+  }
+]

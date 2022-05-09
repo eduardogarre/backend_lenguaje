@@ -75,6 +75,7 @@ struct ListaDocumento {
 async fn guarda_copia_documentos(documentos: String) {
     println!("¡Guardando documentos!");
     println!("{}", documentos);
+    std::fs::write("documentos.json", documentos).unwrap();
 }
 
 impl Clone for Documento {
@@ -116,8 +117,7 @@ async fn crea_documento(documento: Json<Documento>, lista: &State<Documentos>) -
 
     let j: String = serde_json::to_string_pretty(&(*lista)).unwrap();
 
-    guarda_copia_documentos(j)
-    .await;
+    guarda_copia_documentos(j).await;
 
     json!({ "estado": "ok", "id": Some(identificador) })
 }
@@ -243,6 +243,25 @@ async fn archivos(archivo: PathBuf) -> Option<NamedFile> {
  */
 
 fn stage() -> rocket::fairing::AdHoc {
+    let archivo = std::fs::read_to_string("documentos.json");
+
+    let documentos: Vec<Documento> = match archivo {
+        Ok(contenido) => {
+            println!("{}", contenido);
+            serde_json::from_str::<Vec<Documento>>(&contenido).unwrap()
+        }
+        Err(_e) => {
+            vec![Documento {
+                // Nodo inicial
+                id: 0,
+                padre: 0,
+                título: String::new(),
+                contenido: String::new(),
+                hijos: vec![],
+            }]
+        }
+    };
+
     rocket::fairing::AdHoc::on_ignite("JSON", |rocket| async {
         rocket
             .mount(
@@ -265,14 +284,7 @@ fn stage() -> rocket::fairing::AdHoc {
                 ],
             )
             .register("/api/v1/", catchers![error_404, error_500])
-            .manage(Documentos::new(vec![Documento {
-                // Nodo inicial
-                id: 0,
-                padre: 0,
-                título: String::new(),
-                contenido: String::new(),
-                hijos: vec![],
-            }]))
+            .manage(Documentos::new(documentos))
     })
 }
 
