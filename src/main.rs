@@ -72,8 +72,9 @@ struct ListaDocumento {
     documentos: Vec<Documento>,
 }
 
-async fn guarda_copia_documentos(documentos: Json<ListaDocumento>) {
+async fn guarda_copia_documentos(documentos: String) {
     println!("¡Guardando documentos!");
+    println!("{}", documentos);
 }
 
 impl Clone for Documento {
@@ -116,10 +117,10 @@ async fn crea_documento(documento: Json<Documento>, lista: &State<Documentos>) -
 
     lista.push(doc);
 
-    guarda_copia_documentos(Json(ListaDocumento {
-        estado: "ok".to_string(),
-        documentos: lista.clone(),
-    })).await;
+    let j: String = serde_json::to_string_pretty(&(*lista)).unwrap();
+
+    guarda_copia_documentos(j)
+    .await;
 
     json!({ "estado": "ok", "id": Some(identificador) })
 }
