@@ -72,6 +72,10 @@ struct ListaDocumento {
     documentos: Vec<Documento>,
 }
 
+async fn guarda_copia_documentos(documentos: Json<ListaDocumento>) {
+    println!("¡Guardando documentos!");
+}
+
 impl Clone for Documento {
     fn clone(&self) -> Self {
         Documento {
@@ -111,6 +115,11 @@ async fn crea_documento(documento: Json<Documento>, lista: &State<Documentos>) -
     lista[id_padre].hijos.push(identificador);
 
     lista.push(doc);
+
+    guarda_copia_documentos(Json(ListaDocumento {
+        estado: "ok".to_string(),
+        documentos: lista.clone(),
+    })).await;
 
     json!({ "estado": "ok", "id": Some(identificador) })
 }
