@@ -3,14 +3,23 @@ use std::path::{Path, PathBuf};
 #[macro_use]
 extern crate rocket;
 
+extern crate crypto;
+
+use crypto::digest::Digest;
+use crypto::sha3::Sha3;
+
 use rocket::fairing::{Fairing, Info, Kind};
 use rocket::fs::NamedFile;
 use rocket::http::Header;
+use rocket::outcome::IntoOutcome;
+use rocket::request::{self, FromRequest, Request};
 use rocket::serde::json::{json, Json, Value};
 use rocket::serde::{Deserialize, Serialize};
 use rocket::tokio::sync::Mutex;
 use rocket::State;
-use rocket::{Request, Response};
+use rocket::{Response};
+
+use rocket::http::{Cookie, CookieJar};
 
 // Configura CORS
 
@@ -37,11 +46,44 @@ impl Fairing for CORS {
 }
 
 /**
- * Puntos de acceso de la API
+ * Acreditación
  */
 
-// El tipo con el que represento el identificador de un mensaje
+// El tipo con el que represento un identificador
 type Id = usize;
+
+fn ofusca_clave(clave: &String) -> String {
+    let mut olla = Sha3::sha3_512();
+    olla.input_str(clave);
+    olla.result_str()
+}
+
+#[derive(Serialize, Deserialize)]
+#[serde(crate = "rocket::serde")]
+struct Acceso {
+    usuario: String,
+    clave: String
+}
+
+#[derive(Debug)]
+struct Usuario(Id);
+
+#[rocket::async_trait]
+impl<'r> FromRequest<'r> for Usuario {
+    type Error = std::convert::Infallible;
+
+    async fn from_request(request: &'r Request<'_>) -> request::Outcome<Usuario, Self::Error> {
+        request.cookies()
+            .get_private("id_usuario")
+            .and_then(|cookie| cookie.value().parse().ok())
+            .map(Usuario)
+            .or_forward(())
+    }
+}
+
+/**
+ * Documentos
+ */
 
 // Ya existe el nodo 0
 static mut CONTADOR_IDS: Id = 1;
@@ -88,6 +130,37 @@ impl Clone for Documento {
             hijos: self.hijos.clone(),
         }
     }
+}
+
+/**
+ * Puntos de acceso de la API
+ */
+
+
+#[get("/secreto")]
+fn secreto_accesible(usuario: Usuario) -> String {
+    "secreto".to_string()
+}
+
+#[get("/secreto", rank = 2)]
+fn secreto_no_accesible() -> String {
+    "no tienes acceso".to_string()
+}
+
+#[post("/sesión", data = "<acceso>")]
+fn gestiona_acceso(caja: &CookieJar<'_>, acceso: Json<Acceso>) -> Result<String, String> {
+    if acceso.usuario == "Administrador" && acceso.clave == "1234" {
+        caja.add_private(Cookie::new("id_usuario", 1.to_string()));
+        Ok("Acceso concedido".to_string())
+    } else {
+        Err("Acceso denegado".to_string())
+    }
+}
+
+#[delete("/sesión")]
+fn cierra_sesión(caja: &CookieJar<'_>) -> String {
+    caja.remove_private(Cookie::named("id_usuario"));
+    "Sesión cerrada".to_string()
 }
 
 #[get("/documentos", format = "json")]
@@ -249,6 +322,10 @@ async fn archivos(archivo: PathBuf) -> Option<NamedFile> {
  */
 
 fn stage() -> rocket::fairing::AdHoc {
+    
+    let clave: String = "1234".to_string();
+    println!("La clave ofuscada es: {}", ofusca_clave(&clave));
+
     // Documento raíz, nodo 0
     let doc_raíz: Documento = Documento {
         // Nodo inicial
@@ -312,6 +389,10 @@ fn stage() -> rocket::fairing::AdHoc {
             .mount(
                 "/api/v1/",
                 routes![
+                    secreto_accesible,
+                    secreto_no_accesible,
+                    gestiona_acceso,
+                    cierra_sesión,
                     lee_documentos,
                     crea_documento,
                     lee_documento,
