@@ -1,5 +1,3 @@
-use std::path::{Path, PathBuf};
-
 #[macro_use]
 extern crate rocket;
 
@@ -8,7 +6,6 @@ extern crate crypto;
 use crypto::digest::Digest;
 use crypto::sha3::Sha3;
 
-use rocket::fs::NamedFile;
 use rocket::outcome::IntoOutcome;
 use rocket::request::{self, FromRequest, Request};
 use rocket::serde::json::{json, Json, Value};
@@ -20,6 +17,7 @@ use rocket::http::{Cookie, CookieJar};
 
 // Configura CORS
 
+mod archivos;
 mod cors;
 
 /**
@@ -39,7 +37,7 @@ fn ofusca_clave(clave: &String) -> String {
 #[serde(crate = "rocket::serde")]
 struct Acceso {
     usuario: String,
-    clave: String
+    clave: String,
 }
 
 #[derive(Debug)]
@@ -50,7 +48,8 @@ impl<'r> FromRequest<'r> for Usuario {
     type Error = std::convert::Infallible;
 
     async fn from_request(request: &'r Request<'_>) -> request::Outcome<Usuario, Self::Error> {
-        request.cookies()
+        request
+            .cookies()
             .get_private("id_usuario")
             .and_then(|cookie| cookie.value().parse().ok())
             .map(Usuario)
@@ -112,7 +111,6 @@ impl Clone for Documento {
 /**
  * Puntos de acceso de la API
  */
-
 
 #[get("/secreto")]
 fn secreto_accesible(usuario: Usuario) -> String {
@@ -263,43 +261,10 @@ fn error_500() -> Value {
 }
 
 /**
- * Puntos de acceso para los archivos estáticos
- */
-
-#[get("/", rank = 2)]
-async fn archivo_raiz() -> Option<NamedFile> {
-    NamedFile::open(Path::new("build/").join("index.html"))
-        .await
-        .ok()
-}
-
-#[get("/index.htm", rank = 2)]
-async fn archivo_index_htm() -> Option<NamedFile> {
-    NamedFile::open(Path::new("build/").join("index.html"))
-        .await
-        .ok()
-}
-
-#[get("/<archivo..>", rank = 3)]
-async fn archivos(archivo: PathBuf) -> Option<NamedFile> {
-    let arch = NamedFile::open(Path::new("build/").join(archivo)).await;
-    let resultado = match arch {
-        Ok(a) => a,
-        Err(_e) => {
-            return NamedFile::open(Path::new("build/").join("index.html"))
-                .await
-                .ok()
-        }
-    };
-    return Some(resultado);
-}
-
-/**
  * Monta todos los puntos de acceso
  */
 
 fn stage() -> rocket::fairing::AdHoc {
-    
     let clave: String = "1234".to_string();
     println!("La clave ofuscada es: {}", ofusca_clave(&clave));
 
@@ -354,15 +319,7 @@ fn stage() -> rocket::fairing::AdHoc {
 
     rocket::fairing::AdHoc::on_ignite("JSON", |rocket| async {
         rocket
-            .mount(
-                "/",
-                routes![
-                    archivo_raiz,
-                    archivo_index_htm,
-                    archivos,
-                    //archivos_predeterminado
-                ],
-            )
+            .mount("/", archivos::routes())
             .mount(
                 "/api/v1/",
                 routes![
