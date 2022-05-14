@@ -29,7 +29,7 @@ struct Acceso {
 }
 
 #[derive(Debug)]
-struct Usuario(Id);
+pub struct Usuario(Id);
 
 #[rocket::async_trait]
 impl<'r> FromRequest<'r> for Usuario {
@@ -50,7 +50,7 @@ impl<'r> FromRequest<'r> for Usuario {
  */
 
 #[get("/secreto")]
-fn secreto_accesible(usuario: Usuario) -> String {
+fn secreto_accesible(_usuario: Usuario) -> String {
     "secreto".to_string()
 }
 

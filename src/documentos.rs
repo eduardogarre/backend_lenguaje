@@ -4,6 +4,7 @@ use rocket::tokio::sync::Mutex;
 use rocket::State;
 
 use super::id::Id;
+use super::sesion::Usuario;
 
 /**
  * Documentos
@@ -71,7 +72,11 @@ async fn lee_documentos(lista: &State<Documentos>) -> String {
 }
 
 #[post("/documento", format = "json", data = "<documento>")]
-async fn crea_documento(documento: Json<Documento>, lista: &State<Documentos>) -> Value {
+async fn crea_documento(
+    documento: Json<Documento>,
+    lista: &State<Documentos>,
+    _usuario: Usuario,
+) -> Value {
     let mut lista = lista.lock().await;
     let identificador: Id;
 
@@ -112,6 +117,7 @@ async fn cambia_documento(
     id: Id,
     documento: Json<Documento>,
     lista: &State<Documentos>,
+    _usuario: Usuario,
 ) -> Option<Json<Documento>> {
     let mut lista = lista.lock().await;
     let doc = documento.into_inner();
@@ -128,7 +134,7 @@ async fn cambia_documento(
 }
 
 #[delete("/documento/<id>")]
-async fn borra_documento(id: Id, lista: &State<Documentos>) -> Value {
+async fn borra_documento(id: Id, lista: &State<Documentos>, _usuario: Usuario) -> Value {
     let mut lista = lista.lock().await;
     let i = lista.iter().position(|d| d.id == id).unwrap();
     if ((*lista)[i].hijos.len() != 0) {
