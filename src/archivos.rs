@@ -33,7 +33,7 @@ async fn archivos(archivo: PathBuf) -> Option<NamedFile> {
     return Some(resultado);
 }
 
-pub fn routes() -> Vec<rocket::Route> {
+pub fn rutas() -> Vec<rocket::Route> {
     routes![
         archivo_raiz,
         archivo_index_htm,
