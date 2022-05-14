@@ -64,11 +64,10 @@ impl Clone for Documento {
 // Puntos de entrada de la api de documentos:
 
 #[get("/documentos", format = "json")]
-async fn lee_documentos(lista: &State<Documentos>) -> String {
+async fn lee_documentos(lista: &State<Documentos>) -> Value {
     let lista = lista.lock().await;
 
-    let j: String = serde_json::to_string_pretty(&(*lista)).unwrap();
-    return j;
+    json!(*lista)
 }
 
 #[post("/documento", format = "json", data = "<documento>")]
