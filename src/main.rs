@@ -41,7 +41,7 @@ fn stage() -> rocket::fairing::AdHoc {
             .mount("/api/v1/", documentos::rutas())
             .mount("/api/v1/", sesion::rutas())
             .register("/api/v1/", catchers![error_404, error_500])
-            .manage(documentos::prepara_estado_inicial_de_documentos())
+            .manage(documentos::prepara_estado_inicial())
     })
 }
 
