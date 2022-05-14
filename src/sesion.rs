@@ -49,12 +49,12 @@ impl<'r> FromRequest<'r> for Usuario {
  * Puntos de acceso de la API
  */
 
-#[get("/secreto")]
+#[get("/sesión")]
 fn secreto_accesible(_usuario: Usuario) -> String {
-    "secreto".to_string()
+    "tienes acceso".to_string()
 }
 
-#[get("/secreto", rank = 2)]
+#[get("/sesión", rank = 2)]
 fn secreto_no_accesible() -> String {
     "no tienes acceso".to_string()
 }
