@@ -8,42 +8,19 @@ extern crate crypto;
 use crypto::digest::Digest;
 use crypto::sha3::Sha3;
 
-use rocket::fairing::{Fairing, Info, Kind};
 use rocket::fs::NamedFile;
-use rocket::http::Header;
 use rocket::outcome::IntoOutcome;
 use rocket::request::{self, FromRequest, Request};
 use rocket::serde::json::{json, Json, Value};
 use rocket::serde::{Deserialize, Serialize};
 use rocket::tokio::sync::Mutex;
 use rocket::State;
-use rocket::{Response};
 
 use rocket::http::{Cookie, CookieJar};
 
 // Configura CORS
 
-pub struct CORS;
-
-#[rocket::async_trait]
-impl Fairing for CORS {
-    fn info(&self) -> Info {
-        Info {
-            name: "Add CORS headers to responses",
-            kind: Kind::Response,
-        }
-    }
-
-    async fn on_response<'r>(&self, _request: &'r Request<'_>, response: &mut Response<'r>) {
-        response.set_header(Header::new("Access-Control-Allow-Origin", "*"));
-        response.set_header(Header::new(
-            "Access-Control-Allow-Methods",
-            "POST, GET, PATCH, OPTIONS",
-        ));
-        response.set_header(Header::new("Access-Control-Allow-Headers", "*"));
-        response.set_header(Header::new("Access-Control-Allow-Credentials", "true"));
-    }
-}
+mod cors;
 
 /**
  * Acreditación
@@ -407,5 +384,5 @@ fn stage() -> rocket::fairing::AdHoc {
 
 #[launch]
 fn rocket() -> _ {
-    rocket::build().attach(CORS).attach(stage())
+    rocket::build().attach(cors::CORS).attach(stage())
 }
