@@ -166,7 +166,7 @@ async fn borra_documento(id: Id, lista: &State<Documentos>) -> Value {
     }
 }
 
-pub fn prepara_documentos() -> Documentos
+pub fn prepara_estado_inicial_de_documentos() -> Documentos
 {
     // Documento raíz, nodo 0
     let doc_raíz: Documento = Documento {
