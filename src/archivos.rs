@@ -1,5 +1,5 @@
-use std::path::{Path, PathBuf};
 use rocket::fs::NamedFile;
+use std::path::{Path, PathBuf};
 
 /**
  * Puntos de acceso para los archivos estáticos
@@ -34,9 +34,5 @@ async fn archivos(archivo: PathBuf) -> Option<NamedFile> {
 }
 
 pub fn rutas() -> Vec<rocket::Route> {
-    routes![
-        archivo_raiz,
-        archivo_index_htm,
-        archivos
-    ]
+    routes![archivo_raiz, archivo_index_htm, archivos]
 }

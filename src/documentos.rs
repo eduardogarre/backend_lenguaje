@@ -1,7 +1,7 @@
 use rocket::serde::json::{json, Json, Value};
 use rocket::serde::{Deserialize, Serialize};
-use rocket::State;
 use rocket::tokio::sync::Mutex;
+use rocket::State;
 
 use super::id::Id;
 
@@ -166,8 +166,7 @@ async fn borra_documento(id: Id, lista: &State<Documentos>) -> Value {
     }
 }
 
-pub fn prepara_estado_inicial() -> Documentos
-{
+pub fn prepara_estado_inicial() -> Documentos {
     // Documento raíz, nodo 0
     let doc_raíz: Documento = Documento {
         // Nodo inicial

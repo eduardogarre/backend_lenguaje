@@ -6,7 +6,7 @@ use crypto::sha3::Sha3;
 use rocket::http::{Cookie, CookieJar};
 use rocket::outcome::IntoOutcome;
 use rocket::request::{self, FromRequest, Request};
-use rocket::serde::json::{Json};
+use rocket::serde::json::Json;
 use rocket::serde::{Deserialize, Serialize};
 
 use super::id::Id;
@@ -14,7 +14,6 @@ use super::id::Id;
 /**
  * Acreditación
  */
-
 
 pub fn ofusca_clave(clave: &String) -> String {
     let mut olla = Sha3::sha3_512();
