@@ -15,8 +15,6 @@ use rocket::State;
 
 use rocket::http::{Cookie, CookieJar};
 
-// Configura CORS
-
 mod archivos;
 mod cors;
 
