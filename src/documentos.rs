@@ -1,3 +1,4 @@
+use rocket::http::Status;
 use rocket::serde::json::{json, Json, Value};
 use rocket::serde::{Deserialize, Serialize};
 use rocket::tokio::sync::Mutex;
@@ -133,15 +134,11 @@ async fn cambia_documento(
 }
 
 #[delete("/documento/<id>")]
-async fn borra_documento(id: Id, lista: &State<Documentos>, _usuario: Usuario) -> Value {
+async fn borra_documento(id: Id, lista: &State<Documentos>, _usuario: Usuario) -> Status {
     let mut lista = lista.lock().await;
     let i = lista.iter().position(|d| d.id == id).unwrap();
     if ((*lista)[i].hijos.len() != 0) {
-        return json!({
-            "estado": "error",
-            "código": 405,
-            "mensaje": "Método no permitido, no puedes borrar un nodo que tenga hijos."
-        });
+        return Status::Forbidden;
     }
 
     if (i != 0) {
@@ -158,16 +155,9 @@ async fn borra_documento(id: Id, lista: &State<Documentos>, _usuario: Usuario) -
         let j: String = serde_json::to_string_pretty(&(*lista)).unwrap();
         guarda_copia_documentos(j).await;
 
-        return json!({
-            "estado": "ok",
-            "código": 200
-        });
+        return Status::Accepted;
     } else {
-        return json!({
-            "estado": "error",
-            "código": 405,
-            "mensaje": "Método no permitido, no puedes borrar el nodo raíz."
-        });
+        return Status::Forbidden;
     }
 }
 

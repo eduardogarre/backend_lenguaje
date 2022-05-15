@@ -9,6 +9,24 @@ mod documentos;
 mod id;
 mod sesion;
 
+#[catch(401)]
+fn error_401() -> Value {
+    json!({
+        "estado": "error",
+        "código": 401,
+        "mensaje": "No tienes permiso para acceder a este recurso."
+    })
+}
+
+#[catch(403)]
+fn error_403() -> Value {
+    json!({
+        "estado": "error",
+        "código": 403,
+        "mensaje": "Acción prohibida."
+    })
+}
+
 #[catch(404)]
 fn error_404() -> Value {
     json!({
@@ -40,7 +58,10 @@ fn stage() -> rocket::fairing::AdHoc {
             .mount("/", archivos::rutas())
             .mount("/api/v1/", documentos::rutas())
             .mount("/api/v1/", sesion::rutas())
-            .register("/api/v1/", catchers![error_404, error_500])
+            .register(
+                "/api/v1/",
+                catchers![error_401, error_403, error_404, error_500],
+            )
             .manage(documentos::prepara_estado_inicial())
     })
 }
