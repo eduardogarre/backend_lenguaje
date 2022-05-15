@@ -3,10 +3,10 @@ extern crate crypto;
 use crypto::digest::Digest;
 use crypto::sha3::Sha3;
 
-use rocket::http::{Cookie, CookieJar};
+use rocket::http::{Cookie, CookieJar, Status};
 use rocket::outcome::IntoOutcome;
 use rocket::request::{self, FromRequest, Request};
-use rocket::serde::json::Json;
+use rocket::serde::json::{json, Json, Value};
 use rocket::serde::{Deserialize, Serialize};
 
 use super::id::Id;
@@ -26,6 +26,12 @@ pub fn ofusca_clave(clave: &String) -> String {
 struct Acceso {
     usuario: String,
     clave: String,
+}
+
+#[derive(Serialize, Deserialize)]
+#[serde(crate = "rocket::serde")]
+struct RespuestaJson {
+    mensaje: String,
 }
 
 #[derive(Debug)]
@@ -50,29 +56,35 @@ impl<'r> FromRequest<'r> for Usuario {
  */
 
 #[get("/sesión")]
-fn secreto_accesible(_usuario: Usuario) -> String {
-    "tienes acceso".to_string()
+fn secreto_accesible(_usuario: Usuario) -> Value {
+    json!(RespuestaJson {
+        mensaje: "Secreto muy valioso.".to_string()
+    })
 }
 
 #[get("/sesión", rank = 2)]
-fn secreto_no_accesible() -> String {
-    "no tienes acceso".to_string()
+fn secreto_no_accesible() -> Status {
+    Status::Unauthorized
 }
 
 #[post("/sesión", data = "<acceso>")]
-fn gestiona_acceso(caja: &CookieJar<'_>, acceso: Json<Acceso>) -> Result<String, String> {
+fn gestiona_acceso(caja: &CookieJar<'_>, acceso: Json<Acceso>) -> Result<Value, Status> {
     if acceso.usuario == "Administrador" && acceso.clave == "1234" {
         caja.add_private(Cookie::new("id_usuario", 1.to_string()));
-        Ok("Acceso concedido".to_string())
+        Ok(json!(RespuestaJson {
+            mensaje: "Acceso concedido.".to_string()
+        }))
     } else {
-        Err("Acceso denegado".to_string())
+        Err(Status::Unauthorized)
     }
 }
 
 #[delete("/sesión")]
-fn cierra_sesión(caja: &CookieJar<'_>) -> String {
+fn cierra_sesión(caja: &CookieJar<'_>) -> Value {
     caja.remove_private(Cookie::named("id_usuario"));
-    "Sesión cerrada".to_string()
+    json!(RespuestaJson {
+        mensaje: "Sesión cerrada.".to_string()
+    })
 }
 
 pub fn rutas() -> Vec<rocket::Route> {
