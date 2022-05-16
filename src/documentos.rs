@@ -125,7 +125,8 @@ async fn cambia_documento(
     (*lista)[i].padre = doc.padre;
     (*lista)[i].título = doc.título;
     (*lista)[i].contenido = doc.contenido;
-    (*lista)[i].hijos = doc.hijos;
+    //No modifico la lista de hijos
+    //(*lista)[i].hijos = doc.hijos;
 
     let j: String = serde_json::to_string_pretty(&(*lista)).unwrap();
     guarda_copia_documentos(j).await;
