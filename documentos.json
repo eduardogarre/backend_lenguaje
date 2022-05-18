@@ -5,14 +5,96 @@
     "título": "",
     "contenido": "",
     "hijos": [
-      1
+      1,
+      3,
+      4,
+      11,
+      12
     ]
   },
   {
     "id": 1,
     "padre": 0,
-    "título": "Adiós",
-    "contenido": "olakase",
+    "título": "Tutorial",
+    "contenido": "<p>Bienvenido a la documentaci&oacute;n de &Ntilde;. Usa el men&uacute; lateral para navegar por el tutorial inicial y por el resto de la documentaci&oacute;n.</p>",
+    "hijos": [
+      2,
+      6,
+      10
+    ]
+  },
+  {
+    "id": 2,
+    "padre": 1,
+    "título": "Introducción",
+    "contenido": "<p>Para poder programar tienes que usar un lenguaje que tu ordenador entienda: un <em>Lenguaje de Programaci&oacute;n</em>. Existen muchos lenguajes de programaci&oacute;n, y en este tutorial te ense&ntilde;ar&eacute; a programar usando el <em>Lenguaje &Ntilde;</em>.</p>\n<p>Cuando escribes algo en un lenguaje humano como el espa&ntilde;ol, lo que hayas escrito se llama \"texto\". Y cuando lo escribes en un lenguaje de programaci&oacute;n, lo llamamos \"c&oacute;digo\". En este tutorial encontrar&aacute;s muchos ejemplos de c&oacute;digo &Ntilde;. Algunos te mostrar&aacute;n peque&ntilde;os trozos de programas, y la mayor&iacute;a te mostrar&aacute;n programas completos que podr&aacute;s construir y ejecutar t&uacute; mismo.</p>\n<p>Para permitir que el c&oacute;digo se pueda leer m&aacute;s f&aacute;cilmente, solemos colorear las palabras clave con diferentes colores. En el c&oacute;digo que leas en este tutorial ver&aacute;s que, por ejemplo, los n&uacute;meros siempre aparecen de color <strong><span style=\"color: rgb(0, 92, 197);\">azul</span></strong>.</p>",
+    "hijos": []
+  },
+  {
+    "id": 3,
+    "padre": 0,
+    "título": "Documentación",
+    "contenido": "<p>Documentaci&oacute;n pendiente. Edito documentaci&oacute;n previa.</p>",
+    "hijos": []
+  },
+  {
+    "id": 4,
+    "padre": 0,
+    "título": "Compilador",
+    "contenido": "<p>Documentaci&oacute;n del compilador pendiente</p>",
+    "hijos": []
+  },
+  {
+    "id": 6,
+    "padre": 1,
+    "título": "Instalación",
+    "contenido": "<p>Para poder programar en &Ntilde;, necesitar&aacute;s instalarlo en tu ordenador.</p>",
+    "hijos": [
+      7,
+      8,
+      9
+    ]
+  },
+  {
+    "id": 7,
+    "padre": 6,
+    "título": "Windows",
+    "contenido": "<p>Pendiente</p>",
+    "hijos": []
+  },
+  {
+    "id": 8,
+    "padre": 6,
+    "título": "Linux",
+    "contenido": "<p>Pendiente</p>",
+    "hijos": []
+  },
+  {
+    "id": 9,
+    "padre": 6,
+    "título": "Mac",
+    "contenido": "<p>Pendiente</p>",
+    "hijos": []
+  },
+  {
+    "id": 10,
+    "padre": 1,
+    "título": "Hola, mundo",
+    "contenido": "<p>Desde hace d&eacute;cadas el primer programa que se escribe cuando se aprende un nuevo lenguaje de programaci&oacute;n es <code>Hola mundo</code>, el programa que muestra el texto \"Hola, mundo\" en la pantalla.</p>\n<p>Escribir y ejecutar con &eacute;xito el programa <code>Hola mundo</code> significa que has logrado completar todos los pasos siguientes:</p>\n<ol>\n<li>Has instalado previamente el lenguaje de programaci&oacute;n</li>\n<li>Has escrito el c&oacute;digo del programa en alg&uacute;n editor</li>\n<li>Has guardado el c&oacute;digo en tu disco, en alg&uacute;n archivo</li>\n<li>Has construido el programa a partir del c&oacute;digo</li>\n<li>Has ejecutado el programa</li>\n<li>Has encontrado el lugar donde tu programa ha escrito \"Hola, mundo\"</li>\n</ol>\n<p>Por eso, conseguir completar todos esos pasos es el gran obst&aacute;culo. Una vez que domines todos esos detalles t&eacute;cnicos, progresar deber&iacute;a ser mucho m&aacute;s sencillo.</p>\n<h4>El c&oacute;digo</h4>\n<p>En &Ntilde;, el c&oacute;digo para escribir \"&iexcl;Hola, mundo!\" es el siguiente:</p>\n<pre class=\"language-&ntilde; language-none\"><code>externo ent escribeln(nat8* texto);\n\np&uacute;blico ent inicia()\n{\n    escribeln(\"&iexcl;Hola, mundo!\");\n\n    devuelve 0;\n}</code></pre>\n<h4>Ejecutando el programa</h4>\n<ol>\n<li>Usando un editor de texto, por ejemplo VS Code, guarda este c&oacute;digo en un archivo llamado <code>hola.&ntilde;</code>.</li>\n<li>Abre un terminal de l&iacute;nea de comandos (c&oacute;mo hacerlo depende de tu sistema operativo).</li>\n<li>Dentro del terminal, dir&iacute;gete a la carpeta donde guardaste el archivo <code>hola.&ntilde;</code> (habitualmente lo logras usando el comando <code>cd</code> de tu terminal para cambiar entre carpetas).</li>\n<li>Construye el programa a partir del c&oacute;digo, ejecutando el comando <code>&ntilde; hola.&ntilde;</code> en tu terminal. Si hasta ahora todo se ha hecho correctamente, el compilador de <strong>&Ntilde;</strong> deber&iacute;a constuir el programa. Ten en cuenta que el compilador no escribe nada en la pantalla si no hay errores. Una vez el compilador haya terminado, ver&aacute;s que en la carpeta donde estaba <code>hola.&ntilde;</code> hay un nuevo archivo ejecutable, <code>programa</code>.</li>\n<li>Ejecuta <code>programa</code> dentro del terminal, debes ver aparecer el texto <code>&iexcl;Hola, mundo!</code> escrito en el terminal.</li>\n</ol>\n<h4>Explicando el programa</h4>\n<p>Por el momento obviaremos la primera l&iacute;nea y vamos a empezar por la l&iacute;nea 3:</p>\n<pre class=\"language-&ntilde; language-none\"><code>p&uacute;blico ent inicia()</code></pre>\n<p>Un programa escrito en &Ntilde; se compone de <code>funciones</code> y <code>variables</code>.</p>\n<ul>\n<li>Las funciones contienen un cuerpo con la lista de <code>expresiones</code>, que explican las operaciones de c&aacute;lculo y de toma de decisiones que hay que realizar.</li>\n<li>Las variables almacenan los valores utilizados por esas operaciones.</li>\n</ul>\n<p>En el ejemplo tenemos la funci&oacute;n <code>inicia</code>, en la l&iacute;nea 3. Normalmente podemos poner el nombre que queramos a nuestras funciones, pero la funci&oacute;n <code>inicia</code> es especial: el programa empieza a ejecutarse al principio de <code>inicia</code>, por lo que todos los programas deben tener una funci&oacute;n <code>inicia</code> en alguna parte de su c&oacute;digo.</p>\n<p>Despu&eacute;s de la funci&oacute;n <code>inicia</code> en la l&iacute;nea 3, tenemos el cuerpo de la funci&oacute;n entre las l&iacute;neas 4 y 8, y que est&aacute; delimitado por las llaves <code>{</code> y <code>}</code>. El cuerpo contiene la lista de <code>expresiones</code> con las operaciones que hay que realizar durante la ejecuci&oacute;n del programa. En este caso hay 2 expresiones:</p>\n<ul>\n<li>L&iacute;nea 5:\n<pre class=\"language-&ntilde; language-none\"><code>escribeln(\"&iexcl;Hola, mundo!\");</code></pre>\n</li>\n<li>L&iacute;nea 7:\n<pre class=\"language-&ntilde; language-none\"><code>devuelve 0;</code></pre>\n</li>\n</ul>\n<p>Durante su ejecuci&oacute;n, <code>inicia</code> suele tener que llamar a otras funciones que le ayuden a realizar las operaciones necesarias. Muchas veces t&uacute; mismo escribir&aacute;s esas funciones, pero es frecuente que aproveches funciones que ya han escrito otras personas, que se encuentran en bibliotecas de funciones.<br>La funci&oacute;n <code>escribeln</code> en la l&iacute;nea 5 es una de esas funciones que ya est&aacute;n escritas.</p>\n<p>Es por eso que en la primera l&iacute;nea del programa aparece lo siguiente:</p>\n<pre class=\"language-&ntilde; language-none\"><code>externo ent escribeln(nat8* texto);</code></pre>\n<p>Esta l&iacute;nea le est&aacute; indicando al compilador de &Ntilde; que usaremos la funci&oacute;n <code>escribeln</code>, una funci&oacute;n externa que ya ha escrito otro programador.</p>\n<p>Una forma de comunicar datos entre funciones es que, cuando la funci&oacute;n <code>A</code> llama a la funci&oacute;n <code>B</code>, la funci&oacute;n <code>A</code> proporcione una lista de valores, llamados <em>argumentos</em>, a la funci&oacute;n <code>B</code>, para que <code>B</code> los pueda usar en sus operaciones.</p>",
+    "hijos": []
+  },
+  {
+    "id": 11,
+    "padre": 0,
+    "título": "Título",
+    "contenido": "<p>Comienza a escribir... Creo categor&iacute;a previa. Editor previo</p>",
+    "hijos": []
+  },
+  {
+    "id": 12,
+    "padre": 0,
+    "título": "Título",
+    "contenido": "<p>Comienza a escribir... Creo categor&iacute;a previa con editor previo</p>",
     "hijos": []
   }
 ]
