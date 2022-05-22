@@ -7,25 +7,25 @@ use std::path::{Path, PathBuf};
 
 #[get("/", rank = 2)]
 async fn archivo_raiz() -> Option<NamedFile> {
-    NamedFile::open(Path::new("build/").join("index.html"))
+    NamedFile::open(Path::new("sitio/").join("index.html"))
         .await
         .ok()
 }
 
 #[get("/index.htm", rank = 2)]
 async fn archivo_index_htm() -> Option<NamedFile> {
-    NamedFile::open(Path::new("build/").join("index.html"))
+    NamedFile::open(Path::new("sitio/").join("index.html"))
         .await
         .ok()
 }
 
 #[get("/<archivo..>", rank = 3)]
 async fn archivos(archivo: PathBuf) -> Option<NamedFile> {
-    let arch = NamedFile::open(Path::new("build/").join(archivo)).await;
+    let arch = NamedFile::open(Path::new("sitio/").join(archivo)).await;
     let resultado = match arch {
         Ok(a) => a,
         Err(_e) => {
-            return NamedFile::open(Path::new("build/").join("index.html"))
+            return NamedFile::open(Path::new("sitio/").join("index.html"))
                 .await
                 .ok()
         }
