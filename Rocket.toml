@@ -12,4 +12,4 @@ limits = { json = "16 MiB" }
 ## set only when compiled in release mode, i.e, `cargo build --release`
 ## don't use this secret_key! generate your own and keep it private!
 [release]
-#secret_key = "IUs3NOzlzqglMk3jl5vgkUJQ2gF/9d0j4lFI/01hGc0="
+#secret_key = ""
