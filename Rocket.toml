@@ -3,6 +3,8 @@
 port = 80
 address = "0.0.0.0"
 limits = { forms = "8 MiB", json = "8 MiB" }
+admin = "Administrador"
+clave = "1234"
 
 ## set only when compiled in debug mode, i.e, `cargo build`
 [debug]
@@ -13,3 +15,4 @@ limits = { json = "16 MiB" }
 ## don't use this secret_key! generate your own and keep it private!
 [release]
 #secret_key = ""
+clave = "abcd"

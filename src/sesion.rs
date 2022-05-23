@@ -3,6 +3,7 @@ extern crate crypto;
 use crypto::digest::Digest;
 use crypto::sha3::Sha3;
 
+use rocket::Config;
 use rocket::http::{Cookie, CookieJar, Status};
 use rocket::outcome::IntoOutcome;
 use rocket::request::{self, FromRequest, Request};
@@ -14,6 +15,13 @@ use super::id::Id;
 /**
  * Acreditación
  */
+
+#[derive(Deserialize)]
+#[serde(crate = "rocket::serde")]
+pub struct ConfigAdmin {
+    admin: String,
+    clave: String,
+}
 
 pub fn ofusca_clave(clave: &String) -> String {
     let mut olla = Sha3::sha3_512();
@@ -69,7 +77,10 @@ fn secreto_no_accesible() -> Status {
 
 #[post("/sesión", data = "<acceso>")]
 fn gestiona_acceso(caja: &CookieJar<'_>, acceso: Json<Acceso>) -> Result<Value, Status> {
-    if acceso.usuario == "Administrador" && acceso.clave == "1234" {
+    
+    let config_admin: ConfigAdmin = Config::figment().extract::<ConfigAdmin>().unwrap();
+
+    if acceso.usuario == config_admin.admin && acceso.clave == config_admin.clave {
         caja.add_private(Cookie::new("id_usuario", 1.to_string()));
         Ok(json!(RespuestaJson {
             mensaje: "Acceso concedido.".to_string()

@@ -1,6 +1,7 @@
 #[macro_use]
 extern crate rocket;
 
+use rocket::fairing::AdHoc;
 use rocket::serde::json::{json, Value};
 
 mod archivos;
@@ -68,5 +69,5 @@ fn stage() -> rocket::fairing::AdHoc {
 
 #[launch]
 fn rocket() -> _ {
-    rocket::build().attach(cors::CORS).attach(stage())
+    rocket::build().attach(cors::CORS).attach(stage()).attach(AdHoc::config::<sesion::ConfigAdmin>())
 }
