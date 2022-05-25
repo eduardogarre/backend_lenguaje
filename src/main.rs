@@ -64,6 +64,7 @@ fn stage() -> rocket::fairing::AdHoc {
                 catchers![error_401, error_403, error_404, error_500],
             )
             .manage(documentos::prepara_estado_inicial())
+            .manage(sesion::prepara_estado_inicial())
     })
 }
 

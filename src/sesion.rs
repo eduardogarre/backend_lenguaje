@@ -9,8 +9,12 @@ use rocket::outcome::IntoOutcome;
 use rocket::request::{self, FromRequest, Request};
 use rocket::serde::json::{json, Json, Value};
 use rocket::serde::{Deserialize, Serialize};
+use rocket::tokio::sync::Mutex;
+use std::collections::HashMap;
 
 use super::id::Id;
+
+pub type SesionesActivas = Mutex<HashMap<String, String>>;
 
 /**
  * Acreditación
@@ -96,6 +100,11 @@ fn cierra_sesión(caja: &CookieJar<'_>) -> Value {
     json!(RespuestaJson {
         mensaje: "Sesión cerrada.".to_string()
     })
+}
+
+pub fn prepara_estado_inicial() -> SesionesActivas {
+    let dic_vacío = HashMap::new();
+    Mutex::new(dic_vacío)
 }
 
 pub fn rutas() -> Vec<rocket::Route> {
