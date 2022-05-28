@@ -5,7 +5,7 @@ use rocket::tokio::sync::Mutex;
 use rocket::State;
 
 use super::id::Id;
-use super::sesion::Usuario;
+use super::usuarios::Usuario;
 
 /**
  * Documentos

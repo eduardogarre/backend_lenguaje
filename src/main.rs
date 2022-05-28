@@ -9,6 +9,7 @@ mod cors;
 mod documentos;
 mod id;
 mod sesion;
+mod usuarios;
 
 #[catch(401)]
 fn error_401() -> Value {
@@ -64,11 +65,12 @@ fn stage() -> rocket::fairing::AdHoc {
                 catchers![error_401, error_403, error_404, error_500],
             )
             .manage(documentos::prepara_estado_inicial())
+            .manage(usuarios::prepara_estado_inicial())
             .manage(sesion::prepara_estado_inicial())
     })
 }
 
 #[launch]
 fn rocket() -> _ {
-    rocket::build().attach(cors::CORS).attach(stage()).attach(AdHoc::config::<sesion::ConfigAdmin>())
+    rocket::build().attach(cors::CORS).attach(AdHoc::config::<sesion::ConfigAdmin>()).attach(stage())
 }

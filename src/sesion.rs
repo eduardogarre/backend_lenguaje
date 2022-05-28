@@ -21,13 +21,11 @@ use std::collections::HashMap;
 use std::time::{Duration, SystemTime};
 
 use super::id::Id;
+use super::usuarios::Usuario;
 
 /**
  * Acreditación
  */
-
-#[derive(Debug)]
-pub struct Usuario(Id);
 
 #[derive(Deserialize)]
 #[serde(crate = "rocket::serde")]
@@ -43,9 +41,9 @@ pub fn ofusca_clave(clave: &String) -> String {
 }
 
 pub struct Sesión {
-    usuario: Id,
-    último_acceso: std::time::SystemTime,
-    caducidad: std::time::SystemTime
+    pub usuario: Id,
+    pub último_acceso: std::time::SystemTime,
+    pub caducidad: std::time::SystemTime
 }
 
 pub type SesionesActivas = Mutex<HashMap<String, Sesión>>;
@@ -61,33 +59,6 @@ struct Acceso {
 #[serde(crate = "rocket::serde")]
 struct RespuestaJson {
     mensaje: String,
-}
-
-#[rocket::async_trait]
-impl<'r> FromRequest<'r> for Usuario {
-    type Error = std::convert::Infallible;
-
-    async fn from_request(request: &'r Request<'_>) -> request::Outcome<Usuario, Self::Error> {
-        //let estado_sesiones = try_outcome!(request.guard::<&State<SesionesActivas>>().await);
-        let estado_sesiones = request.guard::<&State<SesionesActivas>>().await.unwrap();
-        let mut mutex_sesiones = estado_sesiones.lock().await;
-
-        let cookie_sesión = request.cookies().get_private("sesión").unwrap();
-        let sesión_leída: String = cookie_sesión.value().to_string();
-        let contenido_sesión = (*mutex_sesiones).get(&sesión_leída).unwrap();
-
-        println!("Sesión leída: {}", sesión_leída);
-        println!("usuario: {}", contenido_sesión.usuario.to_string());
-        println!("último acceso: {:?}", contenido_sesión.último_acceso);
-        println!("caducidad: {:?}", contenido_sesión.caducidad);
-
-        request
-            .cookies()
-            .get_private("id_usuario")
-            .and_then(|cookie| cookie.value().parse().ok())
-            .map(Usuario)
-            .or_forward(())
-    }
 }
 
 fn crea_sesión(usuario: String) -> Sesión {
