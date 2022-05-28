@@ -26,6 +26,9 @@ use super::id::Id;
  * Acreditación
  */
 
+#[derive(Debug)]
+pub struct Usuario(Id);
+
 #[derive(Deserialize)]
 #[serde(crate = "rocket::serde")]
 pub struct ConfigAdmin {
@@ -40,7 +43,7 @@ pub fn ofusca_clave(clave: &String) -> String {
 }
 
 pub struct Sesión {
-    usuario: String,
+    usuario: Id,
     último_acceso: std::time::SystemTime,
     caducidad: std::time::SystemTime
 }
@@ -60,9 +63,6 @@ struct RespuestaJson {
     mensaje: String,
 }
 
-#[derive(Debug)]
-pub struct Usuario(Id);
-
 #[rocket::async_trait]
 impl<'r> FromRequest<'r> for Usuario {
     type Error = std::convert::Infallible;
@@ -77,7 +77,7 @@ impl<'r> FromRequest<'r> for Usuario {
         let contenido_sesión = (*mutex_sesiones).get(&sesión_leída).unwrap();
 
         println!("Sesión leída: {}", sesión_leída);
-        println!("usuario: {}", contenido_sesión.usuario);
+        println!("usuario: {}", contenido_sesión.usuario.to_string());
         println!("último acceso: {:?}", contenido_sesión.último_acceso);
         println!("caducidad: {:?}", contenido_sesión.caducidad);
 
@@ -94,7 +94,7 @@ fn crea_sesión(usuario: String) -> Sesión {
     let ahora: std::time::SystemTime = SystemTime::now();
     let caducidad: std::time::SystemTime = ahora.checked_add(Duration::from_secs(3600)).unwrap();
     let sesión = Sesión {
-        usuario: usuario,
+        usuario: 0,
         último_acceso: ahora,
         caducidad: caducidad
     };
@@ -102,7 +102,7 @@ fn crea_sesión(usuario: String) -> Sesión {
 }
 
 fn crea_símbolo_sesión() -> String {
-    let mut aleatorio = [0u8; 128];
+    let mut aleatorio = [0u8; 64];
     thread_rng().try_fill(&mut aleatorio[..]);
     format!("{}", base64::encode(&aleatorio))
 }
