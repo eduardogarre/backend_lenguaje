@@ -16,7 +16,9 @@ use rocket::serde::{Deserialize, Serialize};
 use rocket::tokio::sync::Mutex;
 use rocket::Config;
 use rocket::State;
+
 use std::collections::HashMap;
+use std::time::{Duration, SystemTime};
 
 use super::id::Id;
 
@@ -37,6 +39,12 @@ pub fn ofusca_clave(clave: &String) -> String {
     let mut olla = Sha3::sha3_512();
     olla.input_str(clave);
     olla.result_str()
+}
+
+struct Sesión {
+    usuario: String,
+    último_acceso: std::time::SystemTime,
+    caducidad: std::time::SystemTime
 }
 
 #[derive(Serialize, Deserialize)]
@@ -80,6 +88,17 @@ impl<'r> FromRequest<'r> for Usuario {
     }
 }
 
+fn crea_sesión(usuario: String) -> Sesión {
+    let ahora: std::time::SystemTime = SystemTime::now();
+    let caducidad: std::time::SystemTime = ahora.checked_add(Duration::from_secs(3600)).unwrap();
+    let sesión = Sesión {
+        usuario: usuario,
+        último_acceso: ahora,
+        caducidad: caducidad
+    };
+    return sesión;
+}
+
 fn crea_símbolo_sesión() -> String {
     let mut aleatorio = [0u8; 128];
     thread_rng().try_fill(&mut aleatorio[..]);
@@ -109,10 +128,15 @@ async fn gestiona_acceso(caja: &CookieJar<'_>, acceso: Json<Acceso>, estado_sesi
     let mut mutex_sesiones = estado_sesiones.lock().await;
 
     if acceso.usuario == config_admin.admin && acceso.clave == config_admin.clave {
+
         caja.add_private(Cookie::new("id_usuario", 1.to_string()));
+
         let símbolo_sesión: String = crea_símbolo_sesión();
+        let sesión: Sesión = crea_sesión(acceso.usuario.clone());
         (*mutex_sesiones).insert(símbolo_sesión.clone(), "probando".to_string());
+        
         caja.add_private(Cookie::new("sesión", símbolo_sesión));
+
         Ok(json!(RespuestaJson {
             mensaje: "Acceso concedido.".to_string()
         }))
