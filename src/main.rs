@@ -60,6 +60,7 @@ fn stage() -> rocket::fairing::AdHoc {
             .mount("/", archivos::rutas())
             .mount("/api/v1/", documentos::rutas())
             .mount("/api/v1/", sesion::rutas())
+            .mount("/api/v1/", usuarios::rutas())
             .register(
                 "/api/v1/",
                 catchers![error_401, error_403, error_404, error_500],
@@ -72,5 +73,5 @@ fn stage() -> rocket::fairing::AdHoc {
 
 #[launch]
 fn rocket() -> _ {
-    rocket::build().attach(cors::CORS).attach(AdHoc::config::<sesion::ConfigAdmin>()).attach(stage())
+    rocket::build().attach(cors::CORS).attach(AdHoc::config::<usuarios::ConfigAdmin>()).attach(stage())
 }

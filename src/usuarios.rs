@@ -1,3 +1,4 @@
+use rocket::Config;
 use rocket::http::Status;
 use rocket::outcome::{try_outcome, IntoOutcome, Outcome::*};
 use rocket::request::{self, FromRequest, Request};
@@ -42,7 +43,7 @@ impl<'r> FromRequest<'r> for Usuario {
 
         // Accedo a la lista de usuarios
         let estado_usuarios = request.guard::<&State<Usuarios>>().await.unwrap();
-        let mut mutex_usuarios = estado_usuarios.lock().await;
+        let mutex_usuarios = estado_usuarios.lock().await;
         // Busco el usuario con el identificador que se corresponda con el de la sesión activa
         let i = mutex_usuarios.iter().position(|u| u.id == contenido_sesión.usuario).unwrap();
         let usuario: Usuario = mutex_usuarios[i].clone();
@@ -51,7 +52,6 @@ impl<'r> FromRequest<'r> for Usuario {
         println!("id del usuario: {}", contenido_sesión.usuario.to_string());
         println!("nombre del usuario: {}", usuario.nombre);
         println!("clave del usuario: {}", usuario.clave);
-        println!("último acceso: {:?}", contenido_sesión.último_acceso);
         println!("caducidad: {:?}", contenido_sesión.caducidad);
 
         //request
@@ -189,7 +189,15 @@ async fn borra_usuario(id: Id, lista: &State<Usuarios>, _usuario: Usuario) -> St
     }
 }
 
+#[derive(Deserialize)]
+#[serde(crate = "rocket::serde")]
+pub struct ConfigAdmin {
+    admin: String,
+    clave: String,
+}
+
 pub fn prepara_estado_inicial() -> Usuarios {
+    let config_admin: ConfigAdmin = Config::figment().extract::<ConfigAdmin>().unwrap();
     // Usuario raíz, nodo 0
     let usu_raíz: Usuario = Usuario {
         // Nodo inicial

@@ -14,7 +14,6 @@ use rocket::request::{self, FromRequest, Request};
 use rocket::serde::json::{json, Json, Value};
 use rocket::serde::{Deserialize, Serialize};
 use rocket::tokio::sync::Mutex;
-use rocket::Config;
 use rocket::State;
 
 use std::collections::HashMap;
@@ -22,17 +21,11 @@ use std::time::{Duration, SystemTime};
 
 use super::id::Id;
 use super::usuarios::Usuario;
+use super::usuarios::Usuarios;
 
 /**
  * Acreditación
  */
-
-#[derive(Deserialize)]
-#[serde(crate = "rocket::serde")]
-pub struct ConfigAdmin {
-    admin: String,
-    clave: String,
-}
 
 pub fn ofusca_clave(clave: &String) -> String {
     let mut olla = Sha3::sha3_512();
@@ -42,8 +35,7 @@ pub fn ofusca_clave(clave: &String) -> String {
 
 pub struct Sesión {
     pub usuario: Id,
-    pub último_acceso: std::time::SystemTime,
-    pub caducidad: std::time::SystemTime
+    pub caducidad: std::time::SystemTime,
 }
 
 pub type SesionesActivas = Mutex<HashMap<String, Sesión>>;
@@ -61,13 +53,12 @@ struct RespuestaJson {
     mensaje: String,
 }
 
-fn crea_sesión(usuario: String) -> Sesión {
+fn crea_sesión(usuario: Usuario) -> Sesión {
     let ahora: std::time::SystemTime = SystemTime::now();
     let caducidad: std::time::SystemTime = ahora.checked_add(Duration::from_secs(3600)).unwrap();
     let sesión = Sesión {
-        usuario: 0,
-        último_acceso: ahora,
-        caducidad: caducidad
+        usuario: usuario.id,
+        caducidad: caducidad,
     };
     return sesión;
 }
@@ -95,19 +86,27 @@ fn secreto_no_accesible() -> Status {
 }
 
 #[post("/sesión", data = "<acceso>")]
-async fn gestiona_acceso(caja: &CookieJar<'_>, acceso: Json<Acceso>, estado_sesiones: &State<SesionesActivas>) -> Result<Value, Status> {
-    let config_admin: ConfigAdmin = Config::figment().extract::<ConfigAdmin>().unwrap();
-    
+async fn gestiona_acceso(
+    caja: &CookieJar<'_>,
+    acceso: Json<Acceso>,
+    estado_sesiones: &State<SesionesActivas>,
+    estado_usuarios: &State<Usuarios>,
+) -> Result<Value, Status> {
     let mut mutex_sesiones = estado_sesiones.lock().await;
 
-    if acceso.usuario == config_admin.admin && acceso.clave == config_admin.clave {
+    // Accedo a la lista de usuarios
+    let mut mutex_usuarios = estado_usuarios.lock().await;
+    // Busco el usuario con el identificador que se corresponda con el de la sesión activa
+    let i = mutex_usuarios
+        .iter()
+        .position(|u| u.nombre == acceso.usuario)
+        .unwrap();
+    let usuario: Usuario = mutex_usuarios[i].clone();
 
-        caja.add_private(Cookie::new("id_usuario", 1.to_string()));
-
+    if acceso.clave == usuario.clave {
         let símbolo_sesión: String = crea_símbolo_sesión();
-        let sesión: Sesión = crea_sesión(acceso.usuario.clone());
+        let sesión: Sesión = crea_sesión(usuario);
         (*mutex_sesiones).insert(símbolo_sesión.clone(), sesión);
-        
         caja.add_private(Cookie::new("sesión", símbolo_sesión));
 
         Ok(json!(RespuestaJson {
