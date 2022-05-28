@@ -53,13 +53,6 @@ impl<'r> FromRequest<'r> for Usuario {
         println!("nombre del usuario: {}", usuario.nombre);
         println!("clave del usuario: {}", usuario.clave);
         println!("caducidad: {:?}", contenido_sesión.caducidad);
-
-        //request
-        //    .cookies()
-        //    .get_private("id_usuario")
-        //    .and_then(|cookie| cookie.value().parse().ok())
-        //    .map(Usuario)
-        //    .or_forward(());
         
         Some(usuario).or_forward(())
     }
