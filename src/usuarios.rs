@@ -33,7 +33,7 @@ impl<'r> FromRequest<'r> for Usuario {
     async fn from_request(request: &'r Request<'_>) -> request::Outcome<Usuario, Self::Error> {
         // Accedo a la lista de sesiones
         let estado_sesiones = request.guard::<&State<sesion::SesionesActivas>>().await.unwrap();
-        let mut mutex_sesiones = estado_sesiones.lock().await;
+        let mutex_sesiones = estado_sesiones.lock().await;
         // Accedo a la cookie privada
         let cookie_sesión = request.cookies().get_private("sesión").unwrap();
         // Identifico la sesión guardada en la cookie privada
