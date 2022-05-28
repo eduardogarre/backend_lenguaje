@@ -22,8 +22,6 @@ use std::time::{Duration, SystemTime};
 
 use super::id::Id;
 
-pub type SesionesActivas = Mutex<HashMap<String, String>>;
-
 /**
  * Acreditación
  */
@@ -41,11 +39,13 @@ pub fn ofusca_clave(clave: &String) -> String {
     olla.result_str()
 }
 
-struct Sesión {
+pub struct Sesión {
     usuario: String,
     último_acceso: std::time::SystemTime,
     caducidad: std::time::SystemTime
 }
+
+pub type SesionesActivas = Mutex<HashMap<String, Sesión>>;
 
 #[derive(Serialize, Deserialize)]
 #[serde(crate = "rocket::serde")]
@@ -77,7 +77,9 @@ impl<'r> FromRequest<'r> for Usuario {
         let contenido_sesión = (*mutex_sesiones).get(&sesión_leída).unwrap();
 
         println!("Sesión leída: {}", sesión_leída);
-        println!("Contenido de la sesión leída: {}", contenido_sesión);
+        println!("usuario: {}", contenido_sesión.usuario);
+        println!("último acceso: {:?}", contenido_sesión.último_acceso);
+        println!("caducidad: {:?}", contenido_sesión.caducidad);
 
         request
             .cookies()
@@ -133,7 +135,7 @@ async fn gestiona_acceso(caja: &CookieJar<'_>, acceso: Json<Acceso>, estado_sesi
 
         let símbolo_sesión: String = crea_símbolo_sesión();
         let sesión: Sesión = crea_sesión(acceso.usuario.clone());
-        (*mutex_sesiones).insert(símbolo_sesión.clone(), "probando".to_string());
+        (*mutex_sesiones).insert(símbolo_sesión.clone(), sesión);
         
         caja.add_private(Cookie::new("sesión", símbolo_sesión));
 
