@@ -283,7 +283,7 @@ pub fn prepara_estado_inicial() -> Usuarios {
         id: 0,
         nombre: "Administrador".to_string(),
         clave: "1234".to_string(),
-        roles: vec![],
+        roles: vec!["Administrador".to_string(), "Editor".to_string()],
     };
 
     // Intento cargar usuarios previos
