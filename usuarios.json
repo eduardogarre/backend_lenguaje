@@ -3,6 +3,9 @@
         "id": 0,
         "nombre": "Administrador",
         "clave": "123456",
-        "roles": []
+        "roles": [
+            "Administrador",
+            "Editor"
+        ]
     }
 ]
