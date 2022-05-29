@@ -1,11 +1,19 @@
 [
-    {
-        "id": 0,
-        "nombre": "Administrador",
-        "clave": "123456",
-        "roles": [
-            "Administrador",
-            "Editor"
-        ]
-    }
+  {
+    "id": 0,
+    "nombre": "Administrador",
+    "clave": "123456",
+    "roles": [
+      "Administrador",
+      "Editor"
+    ]
+  },
+  {
+    "id": 1,
+    "nombre": "editor",
+    "clave": "1234",
+    "roles": [
+      "Editor"
+    ]
+  }
 ]

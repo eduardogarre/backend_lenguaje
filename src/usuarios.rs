@@ -1,10 +1,10 @@
-use rocket::Config;
 use rocket::http::Status;
 use rocket::outcome::{try_outcome, IntoOutcome, Outcome::*};
 use rocket::request::{self, FromRequest, Request};
 use rocket::serde::json::{json, Json, Value};
 use rocket::serde::{Deserialize, Serialize};
 use rocket::tokio::sync::Mutex;
+use rocket::Config;
 use rocket::State;
 
 use super::id::Id;
@@ -16,8 +16,7 @@ use super::sesion;
 
 // Estructuras con el usuario
 
-#[derive(Debug)]
-#[derive(Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize)]
 #[serde(crate = "rocket::serde")]
 pub struct Usuario {
     pub id: Id,
@@ -32,7 +31,10 @@ impl<'r> FromRequest<'r> for Usuario {
 
     async fn from_request(request: &'r Request<'_>) -> request::Outcome<Usuario, Self::Error> {
         // Accedo a la lista de sesiones
-        let estado_sesiones = request.guard::<&State<sesion::SesionesActivas>>().await.unwrap();
+        let estado_sesiones = request
+            .guard::<&State<sesion::SesionesActivas>>()
+            .await
+            .unwrap();
         let mutex_sesiones = estado_sesiones.lock().await;
         // Accedo a la cookie privada
         let cookie_sesión = request.cookies().get_private("sesión").unwrap();
@@ -45,7 +47,10 @@ impl<'r> FromRequest<'r> for Usuario {
         let estado_usuarios = request.guard::<&State<Usuarios>>().await.unwrap();
         let mutex_usuarios = estado_usuarios.lock().await;
         // Busco el usuario con el identificador que se corresponda con el de la sesión activa
-        let i = mutex_usuarios.iter().position(|u| u.id == contenido_sesión.usuario).unwrap();
+        let i = mutex_usuarios
+            .iter()
+            .position(|u| u.id == contenido_sesión.usuario)
+            .unwrap();
         let usuario: Usuario = mutex_usuarios[i].clone();
 
         println!("Sesión leída: {}", sesión_leída);
@@ -53,12 +58,11 @@ impl<'r> FromRequest<'r> for Usuario {
         println!("nombre del usuario: {}", usuario.nombre);
         println!("clave del usuario: {}", usuario.clave);
         println!("caducidad: {:?}", contenido_sesión.caducidad);
-        
         Some(usuario).or_forward(())
     }
 }
 
-struct Administrador {}
+pub struct Administrador {}
 
 impl Clone for Administrador {
     fn clone(&self) -> Self {
@@ -70,9 +74,14 @@ impl Clone for Administrador {
 impl<'r> FromRequest<'r> for Administrador {
     type Error = std::convert::Infallible;
 
-    async fn from_request(request: &'r Request<'_>) -> request::Outcome<Administrador, Self::Error> {
+    async fn from_request(
+        request: &'r Request<'_>,
+    ) -> request::Outcome<Administrador, Self::Error> {
         // Accedo a la lista de sesiones
-        let estado_sesiones = request.guard::<&State<sesion::SesionesActivas>>().await.unwrap();
+        let estado_sesiones = request
+            .guard::<&State<sesion::SesionesActivas>>()
+            .await
+            .unwrap();
         let mutex_sesiones = estado_sesiones.lock().await;
         // Accedo a la cookie privada
         let cookie_sesión = request.cookies().get_private("sesión").unwrap();
@@ -85,7 +94,10 @@ impl<'r> FromRequest<'r> for Administrador {
         let estado_usuarios = request.guard::<&State<Usuarios>>().await.unwrap();
         let mutex_usuarios = estado_usuarios.lock().await;
         // Busco el usuario con el identificador que se corresponda con el de la sesión activa
-        let i = mutex_usuarios.iter().position(|u| u.id == contenido_sesión.usuario).unwrap();
+        let i = mutex_usuarios
+            .iter()
+            .position(|u| u.id == contenido_sesión.usuario)
+            .unwrap();
         let usuario: Usuario = mutex_usuarios[i].clone();
 
         println!("Sesión leída: {}", sesión_leída);
@@ -95,13 +107,17 @@ impl<'r> FromRequest<'r> for Administrador {
         println!("roles del usuario: {:?}", usuario.roles);
         println!("caducidad: {:?}", contenido_sesión.caducidad);
 
-        usuario.roles.into_iter().find(|r| *r == "Administrador".to_string()).expect("El usuario no tiene el rol de administrador");
+        usuario
+            .roles
+            .into_iter()
+            .find(|r| *r == "Administrador".to_string())
+            .expect("El usuario no tiene el rol de administrador");
 
         Some(Administrador {}).or_forward(())
     }
 }
 
-struct Editor {}
+pub struct Editor {}
 
 impl Clone for Editor {
     fn clone(&self) -> Self {
@@ -115,7 +131,10 @@ impl<'r> FromRequest<'r> for Editor {
 
     async fn from_request(request: &'r Request<'_>) -> request::Outcome<Editor, Self::Error> {
         // Accedo a la lista de sesiones
-        let estado_sesiones = request.guard::<&State<sesion::SesionesActivas>>().await.unwrap();
+        let estado_sesiones = request
+            .guard::<&State<sesion::SesionesActivas>>()
+            .await
+            .unwrap();
         let mutex_sesiones = estado_sesiones.lock().await;
         // Accedo a la cookie privada
         let cookie_sesión = request.cookies().get_private("sesión").unwrap();
@@ -128,7 +147,10 @@ impl<'r> FromRequest<'r> for Editor {
         let estado_usuarios = request.guard::<&State<Usuarios>>().await.unwrap();
         let mutex_usuarios = estado_usuarios.lock().await;
         // Busco el usuario con el identificador que se corresponda con el de la sesión activa
-        let i = mutex_usuarios.iter().position(|u| u.id == contenido_sesión.usuario).unwrap();
+        let i = mutex_usuarios
+            .iter()
+            .position(|u| u.id == contenido_sesión.usuario)
+            .unwrap();
         let usuario: Usuario = mutex_usuarios[i].clone();
 
         println!("Sesión leída: {}", sesión_leída);
@@ -138,7 +160,11 @@ impl<'r> FromRequest<'r> for Editor {
         println!("roles del usuario: {:?}", usuario.roles);
         println!("caducidad: {:?}", contenido_sesión.caducidad);
 
-        usuario.roles.into_iter().find(|r| *r == "Editor".to_string()).expect("El usuario no tiene el rol de editor");
+        usuario
+            .roles
+            .into_iter()
+            .find(|r| *r == "Editor".to_string())
+            .expect("El usuario no tiene el rol de editor");
 
         Some(Editor {}).or_forward(())
     }
@@ -187,7 +213,7 @@ impl Clone for Usuario {
 // Puntos de entrada de la api de usuarios:
 
 #[get("/usuarios", format = "json")]
-async fn lee_usuarios(lista: &State<Usuarios>) -> Value {
+async fn lee_usuarios(lista: &State<Usuarios>, _administrador: Administrador) -> Value {
     let lista = lista.lock().await;
 
     json!(*lista)
@@ -198,6 +224,7 @@ async fn crea_usuario(
     usuario: Json<Usuario>,
     lista: &State<Usuarios>,
     _usuario: Usuario,
+    _administrador: Administrador,
 ) -> Value {
     let mut lista = lista.lock().await;
     let identificador: Id;
@@ -252,7 +279,7 @@ async fn cambia_usuario(
 }
 
 #[delete("/usuario/<id>")]
-async fn borra_usuario(id: Id, lista: &State<Usuarios>, _usuario: Usuario) -> Status {
+async fn borra_usuario(id: Id, lista: &State<Usuarios>, _usuario: Usuario, _administrador: Administrador) -> Status {
     let mut lista = lista.lock().await;
     let i = lista.iter().position(|u| u.id == id).unwrap();
 
