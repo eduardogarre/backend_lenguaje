@@ -279,7 +279,12 @@ async fn cambia_usuario(
 }
 
 #[delete("/usuario/<id>")]
-async fn borra_usuario(id: Id, lista: &State<Usuarios>, _usuario: Usuario, _administrador: Administrador) -> Status {
+async fn borra_usuario(
+    id: Id,
+    lista: &State<Usuarios>,
+    _usuario: Usuario,
+    _administrador: Administrador,
+) -> Status {
     let mut lista = lista.lock().await;
     let i = lista.iter().position(|u| u.id == id).unwrap();
 

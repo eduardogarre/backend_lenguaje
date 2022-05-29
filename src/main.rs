@@ -73,5 +73,8 @@ fn stage() -> rocket::fairing::AdHoc {
 
 #[launch]
 fn rocket() -> _ {
-    rocket::build().attach(cors::CORS).attach(AdHoc::config::<usuarios::ConfigAdmin>()).attach(stage())
+    rocket::build()
+        .attach(cors::CORS)
+        .attach(AdHoc::config::<usuarios::ConfigAdmin>())
+        .attach(stage())
 }
