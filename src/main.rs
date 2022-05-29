@@ -8,6 +8,7 @@ mod archivos;
 mod cors;
 mod documentos;
 mod id;
+mod roles;
 mod sesion;
 mod usuarios;
 

@@ -9,8 +9,6 @@ use rand::thread_rng;
 use rand::Rng;
 
 use rocket::http::{Cookie, CookieJar, Status};
-use rocket::outcome::{try_outcome, IntoOutcome, Outcome::*};
-use rocket::request::{self, FromRequest, Request};
 use rocket::serde::json::{json, Json, Value};
 use rocket::serde::{Deserialize, Serialize};
 use rocket::tokio::sync::Mutex;
@@ -20,8 +18,7 @@ use std::collections::HashMap;
 use std::time::{Duration, SystemTime};
 
 use super::id::Id;
-use super::usuarios::Usuario;
-use super::usuarios::Usuarios;
+use super::usuarios::{Usuario, Usuarios};
 
 /**
  * Acreditación
