@@ -138,18 +138,15 @@ async fn cambia_documento(
 async fn borra_documento(id: Id, lista: &State<Documentos>, _usuario: Usuario) -> Status {
     let mut lista = lista.lock().await;
     let i = lista.iter().position(|d| d.id == id).unwrap();
+    let id_hijo = (*lista)[i].id;
     if ((*lista)[i].hijos.len() != 0) {
         return Status::Forbidden;
     }
 
-    if (i != 0) {
+    if (i != 0 && id_hijo != 0) {
         let id_padre = lista.iter().position(|d| d.id == lista[i].padre).unwrap();
 
-        (*lista)[id_padre].hijos = lista[id_padre]
-            .hijos
-            .drain(..)
-            .filter(|id_hijo| *id_hijo != i)
-            .collect();
+        (*lista)[id_padre].hijos.retain(|&h| h != id_hijo);
 
         lista.remove(i);
 
