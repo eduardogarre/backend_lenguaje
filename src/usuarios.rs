@@ -106,7 +106,11 @@ impl Clone for Usuario {
 // Puntos de entrada de la api de usuarios:
 
 #[get("/usuarios", format = "json")]
-async fn lee_usuarios(lista: &State<Usuarios>, _administrador: Administrador) -> Value {
+async fn lee_usuarios(
+    lista: &State<Usuarios>,
+    _usuario: Usuario,
+    _administrador: Administrador,
+) -> Value {
     let lista = lista.lock().await;
 
     json!(*lista)
@@ -138,7 +142,30 @@ async fn crea_usuario(
 }
 
 #[get("/usuario/<id>", format = "json")]
-async fn lee_usuario(id: Id, lista: &State<Usuarios>) -> Option<Json<Usuario>> {
+async fn lee_usuario(id: Id, lista: &State<Usuarios>, _usuario: Usuario) -> Option<Json<Usuario>> {
+    let lista = lista.lock().await;
+    let i = lista.iter().position(|u| u.id == id).unwrap();
+    let usu: Usuario = lista[i].clone();
+
+    if (usu.id == id) { // Solo acepto petición si el usuario está pidiendo su propia información
+        Some(Json(Usuario {
+            id: usu.id,
+            nombre: usu.nombre.clone(),
+            clave: usu.clave.clone(),
+            roles: usu.roles.clone(),
+        }))
+    } else {
+        None
+    }
+}
+
+#[get("/usuario/<id>", format = "json", rank = 2)]
+async fn lee_cualquier_usuario(
+    id: Id,
+    lista: &State<Usuarios>,
+    _usuario: Usuario,
+    _administrador: Administrador,
+) -> Option<Json<Usuario>> {
     let lista = lista.lock().await;
     let i = lista.iter().position(|u| u.id == id).unwrap();
     let usu: Usuario = lista[i].clone();
@@ -258,6 +285,7 @@ pub fn rutas() -> Vec<rocket::Route> {
         lee_usuarios,
         crea_usuario,
         lee_usuario,
+        lee_cualquier_usuario,
         cambia_usuario,
         borra_usuario
     ]
