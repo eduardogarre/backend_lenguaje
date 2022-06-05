@@ -15,5 +15,11 @@
     "roles": [
       "Editor"
     ]
+  },
+  {
+    "id": 2,
+    "nombre": "usuario",
+    "clave": "1234",
+    "roles": []
   }
 ]
