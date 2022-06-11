@@ -66,8 +66,7 @@ impl Clone for Documento {
 // Puntos de entrada de la api de documentos:
 
 #[get("/documentos", format = "json")]
-async fn lee_documentos(lista: &State<Documentos>,
-    _editor: Editor,) -> Value {
+async fn lee_documentos(lista: &State<Documentos>, _editor: Editor) -> Value {
     let lista = lista.lock().await;
 
     json!(*lista)
@@ -139,8 +138,12 @@ async fn cambia_documento(
 }
 
 #[delete("/documento/<id>")]
-async fn borra_documento(id: Id, lista: &State<Documentos>, _usuario: Usuario,
-    _editor: Editor,) -> Status {
+async fn borra_documento(
+    id: Id,
+    lista: &State<Documentos>,
+    _usuario: Usuario,
+    _editor: Editor,
+) -> Status {
     let mut lista = lista.lock().await;
     let i = lista.iter().position(|d| d.id == id).unwrap();
     let id_hijo = (*lista)[i].id;
