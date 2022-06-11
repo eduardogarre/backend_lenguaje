@@ -184,6 +184,7 @@ async fn cambia_usuario(
     usuario: Json<Usuario>,
     lista: &State<Usuarios>,
     _usuario: Usuario,
+    _administrador: Administrador,
 ) -> Option<Json<Usuario>> {
     let mut lista = lista.lock().await;
     let usu = usuario.into_inner();
