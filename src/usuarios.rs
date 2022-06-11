@@ -142,24 +142,6 @@ async fn crea_usuario(
 }
 
 #[get("/usuario/<id>", format = "json")]
-async fn lee_usuario(id: Id, lista: &State<Usuarios>, _usuario: Usuario) -> Option<Json<Usuario>> {
-    let lista = lista.lock().await;
-    let i = lista.iter().position(|u| u.id == id).unwrap();
-    let usu: Usuario = lista[i].clone();
-
-    if (usu.id == id) { // Solo acepto petición si el usuario está pidiendo su propia información
-        Some(Json(Usuario {
-            id: usu.id,
-            nombre: usu.nombre.clone(),
-            clave: usu.clave.clone(),
-            roles: usu.roles.clone(),
-        }))
-    } else {
-        None
-    }
-}
-
-#[get("/usuario/<id>", format = "json", rank = 2)]
 async fn lee_cualquier_usuario(
     id: Id,
     lista: &State<Usuarios>,
@@ -175,6 +157,25 @@ async fn lee_cualquier_usuario(
         clave: usu.clave.clone(),
         roles: usu.roles.clone(),
     }))
+}
+
+#[get("/usuario/<id>", format = "json", rank = 2)]
+async fn lee_usuario(id: Id, lista: &State<Usuarios>, _usuario: Usuario) -> Option<Json<Usuario>> {
+    let lista = lista.lock().await;
+    let i = lista.iter().position(|u| u.id == id).unwrap();
+    let usu: Usuario = lista[i].clone();
+
+    if (usu.id == id) {
+        // Solo acepto petición si el usuario está pidiendo su propia información
+        Some(Json(Usuario {
+            id: usu.id,
+            nombre: usu.nombre.clone(),
+            clave: usu.clave.clone(),
+            roles: usu.roles.clone(),
+        }))
+    } else {
+        None
+    }
 }
 
 #[patch("/usuario/<id>", format = "json", data = "<usuario>")]
