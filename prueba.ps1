@@ -1,0 +1,1 @@
+newman run .\pruebas\pruebas_página_ñ.postman_collection.json -e .\pruebas\pruebas_página_ñ.postman_globals.json

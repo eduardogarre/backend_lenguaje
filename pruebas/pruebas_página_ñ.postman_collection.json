@@ -1,0 +1,2881 @@
+{
+	"info": {
+		"_postman_id": "65cbd351-678b-42ff-a522-0a91c6d7e26b",
+		"name": "pruebas_página_ñ",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "12456824"
+	},
+	"item": [
+		{
+			"name": "0 - Cierra sesión",
+			"item": [
+				{
+					"name": "0.1 - Cierra sesión",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"El código de la respuesta es 200\", function () {\r",
+									"    pm.expect(pm.response.code).to.equal(200);\r",
+									"})\r",
+									"\r",
+									"pm.test(\"Respuesta recibida\", function () {\r",
+									"    pm.response.to.be.withBody;\r",
+									"})\r",
+									"\r",
+									"pm.test(\"La respuesta es un JSON\", function () {\r",
+									"    pm.response.to.be.json;\r",
+									"})\r",
+									"\r",
+									"pm.test(\"He recibido un objeto correctamente formado\", function () {\r",
+									"    const respuestaJson = pm.response.json();\r",
+									"    pm.expect(respuestaJson).to.be.an(\"object\");\r",
+									"    pm.expect(respuestaJson.código).to.be.undefined;\r",
+									"    pm.expect(respuestaJson.estado).to.be.undefined;\r",
+									"    pm.expect(respuestaJson.mensaje).to.be.an(\"string\");\r",
+									"    pm.expect(respuestaJson.mensaje).to.equal(\"Sesión cerrada.\");\r",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{servidor}}/api/v1/sesión",
+							"host": [
+								"{{servidor}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"sesión"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "1 - Sin acreditar",
+			"item": [
+				{
+					"name": "1.1 - Documentos",
+					"item": [
+						{
+							"name": "1.1.1 - (Sin credenciales) No puedo leer la lista de documentos",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"El código de la respuesta no es 200\", function () {\r",
+											"    pm.expect(pm.response.code).to.not.equal(200);\r",
+											"})\r",
+											"\r",
+											"pm.test(\"El código de la respuesta es 401\", function () {\r",
+											"    pm.expect(pm.response.code).to.equal(401);\r",
+											"})\r",
+											"\r",
+											"pm.test(\"Respuesta recibida\", function () {\r",
+											"    pm.response.to.be.withBody;\r",
+											"})\r",
+											"\r",
+											"pm.test(\"La respuesta es un JSON\", function () {\r",
+											"    pm.response.to.be.json;\r",
+											"})\r",
+											"\r",
+											"pm.test(\"He recibido un error correctamente formado\", function () {\r",
+											"    const respuestaJson = pm.response.json();\r",
+											"    pm.expect(respuestaJson).to.be.an(\"object\");\r",
+											"    pm.expect(respuestaJson.código).to.be.a(\"number\");\r",
+											"    pm.expect(respuestaJson.estado).to.be.a(\"string\");\r",
+											"    pm.expect(respuestaJson.estado).to.equal(\"error\");\r",
+											"    pm.expect(respuestaJson.mensaje).to.be.an(\"string\");\r",
+											"    pm.expect(respuestaJson.mensaje).to.equal(\"Error interno.\");\r",
+											"})"
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"const jarra = pm.cookies.jar();\r",
+											"\r",
+											"jarra.clear(pm.request.url, function (error) {\r",
+											"  console.log(error);\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{servidor}}/api/v1/documentos",
+									"host": [
+										"{{servidor}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"documentos"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "1.1.2 - (Sin credenciales) Sí puedo leer un documento con su ID",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"El código de la respuesta es 200\", function () {\r",
+											"    pm.expect(pm.response.code).to.equal(200);\r",
+											"})\r",
+											"\r",
+											"pm.test(\"Respuesta recibida\", function () {\r",
+											"    pm.response.to.be.withBody;\r",
+											"})\r",
+											"\r",
+											"pm.test(\"La respuesta es un JSON\", function () {\r",
+											"    pm.response.to.be.json;\r",
+											"})\r",
+											"\r",
+											"const respuestaJson = pm.response.json();\r",
+											"pm.test(\"He recibido un 'Documento' correctamente formado\", function () {\r",
+											"    pm.expect(respuestaJson).to.be.an(\"object\");\r",
+											"    pm.expect(respuestaJson.contenido).to.be.a(\"string\");\r",
+											"    pm.expect(respuestaJson.título).to.be.a(\"string\");\r",
+											"    pm.expect(respuestaJson.hijos).to.be.an(\"array\");\r",
+											"    pm.expect(respuestaJson.id).to.be.a(\"number\");\r",
+											"    pm.expect(respuestaJson.padre).to.be.a(\"number\");\r",
+											"})\r",
+											"\r",
+											"pm.test(\"He recibido un Documento con el ID especificado\", function () {\r",
+											"    pm.expect(respuestaJson.id).to.equal(parseInt(pm.collectionVariables.get(\"id_doc_que_pedir\")));\r",
+											"})"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{servidor}}/api/v1/documento/{{id_doc_que_pedir}}",
+									"host": [
+										"{{servidor}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"documento",
+										"{{id_doc_que_pedir}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "1.1.3 - (Sin credenciales) No puedo crear un nuevo documento",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"El código de la respuesta no es 200\", function () {\r",
+											"    pm.expect(pm.response.code).to.not.equal(200);\r",
+											"})\r",
+											"\r",
+											"pm.test(\"El código de la respuesta es 401\", function () {\r",
+											"    pm.expect(pm.response.code).to.equal(401);\r",
+											"})\r",
+											"\r",
+											"pm.test(\"Respuesta recibida\", function () {\r",
+											"    pm.response.to.be.withBody;\r",
+											"})\r",
+											"\r",
+											"pm.test(\"La respuesta es un JSON\", function () {\r",
+											"    pm.response.to.be.json;\r",
+											"})\r",
+											"\r",
+											"pm.test(\"He recibido un error correctamente formado\", function () {\r",
+											"    const respuestaJson = pm.response.json();\r",
+											"    pm.expect(respuestaJson).to.be.an(\"object\");\r",
+											"    pm.expect(respuestaJson.código).to.be.a(\"number\");\r",
+											"    pm.expect(respuestaJson.estado).to.be.a(\"string\");\r",
+											"    pm.expect(respuestaJson.estado).to.equal(\"error\");\r",
+											"    pm.expect(respuestaJson.mensaje).to.be.an(\"string\");\r",
+											"    pm.expect(respuestaJson.mensaje).to.equal(\"Error interno.\");\r",
+											"})"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"id\": 0,\r\n    \"padre\": 0,\r\n    \"título\": \"Hola\",\r\n    \"contenido\": \"\",\r\n    \"hijos\": []\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{servidor}}/api/v1/documento",
+									"host": [
+										"{{servidor}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"documento"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "1.1.4 - (Sin credenciales) No puedo editar un documento con su ID",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"El código de la respuesta no es 200\", function () {\r",
+											"    pm.expect(pm.response.code).to.not.equal(200);\r",
+											"})\r",
+											"\r",
+											"pm.test(\"El código de la respuesta es 401\", function () {\r",
+											"    pm.expect(pm.response.code).to.equal(401);\r",
+											"})\r",
+											"\r",
+											"pm.test(\"Respuesta recibida\", function () {\r",
+											"    pm.response.to.be.withBody;\r",
+											"})\r",
+											"\r",
+											"pm.test(\"La respuesta es un JSON\", function () {\r",
+											"    pm.response.to.be.json;\r",
+											"})\r",
+											"\r",
+											"pm.test(\"He recibido un objeto correctamente formado\", function () {\r",
+											"    const respuestaJson = pm.response.json();\r",
+											"    pm.expect(respuestaJson).to.be.an(\"object\");\r",
+											"    pm.expect(respuestaJson.código).to.be.a(\"number\");\r",
+											"    pm.expect(respuestaJson.estado).to.be.a(\"string\");\r",
+											"    pm.expect(respuestaJson.mensaje).to.be.an(\"string\");\r",
+											"})"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "PATCH",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"id\": 1,\r\n    \"padre\": 0,\r\n    \"título\": \"Adiós\",\r\n    \"contenido\": \"olakase\",\r\n    \"hijos\": []\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{servidor}}/api/v1/documento/1",
+									"host": [
+										"{{servidor}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"documento",
+										"1"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "1.1.5 - (Sin credenciales) No puedo borrar un documento con su ID",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"El código de la respuesta no es 200\", function () {\r",
+											"    pm.expect(pm.response.code).to.not.equal(200);\r",
+											"})\r",
+											"\r",
+											"pm.test(\"El código de la respuesta es 401\", function () {\r",
+											"    pm.expect(pm.response.code).to.equal(401);\r",
+											"})\r",
+											"\r",
+											"pm.test(\"Respuesta recibida\", function () {\r",
+											"    pm.response.to.be.withBody;\r",
+											"})\r",
+											"\r",
+											"pm.test(\"La respuesta es un JSON\", function () {\r",
+											"    pm.response.to.be.json;\r",
+											"})\r",
+											"\r",
+											"pm.test(\"He recibido un objeto correctamente formado\", function () {\r",
+											"    const respuestaJson = pm.response.json();\r",
+											"    pm.expect(respuestaJson).to.be.an(\"object\");\r",
+											"    pm.expect(respuestaJson.código).to.be.a(\"number\");\r",
+											"    pm.expect(respuestaJson.estado).to.be.a(\"string\");\r",
+											"    pm.expect(respuestaJson.mensaje).to.be.an(\"string\");\r",
+											"})"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{servidor}}/api/v1/documento/1",
+									"host": [
+										"{{servidor}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"documento",
+										"1"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "1.2 - Usuarios",
+					"item": [
+						{
+							"name": "1.2.1 - (Sin credenciales) No puedo leer la lista de usuarios",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"El código de la respuesta no es 200\", function () {\r",
+											"    pm.expect(pm.response.code).to.not.equal(200);\r",
+											"})\r",
+											"\r",
+											"pm.test(\"El código de la respuesta es 401\", function () {\r",
+											"    pm.expect(pm.response.code).to.equal(401);\r",
+											"})\r",
+											"\r",
+											"pm.test(\"Respuesta recibida\", function () {\r",
+											"    pm.response.to.be.withBody;\r",
+											"})\r",
+											"\r",
+											"pm.test(\"La respuesta es un JSON\", function () {\r",
+											"    pm.response.to.be.json;\r",
+											"})\r",
+											"\r",
+											"pm.test(\"He recibido un error correctamente formado\", function () {\r",
+											"    const respuestaJson = pm.response.json();\r",
+											"    pm.expect(respuestaJson).to.be.an(\"object\");\r",
+											"    pm.expect(respuestaJson.código).to.be.a(\"number\");\r",
+											"    pm.expect(respuestaJson.estado).to.be.a(\"string\");\r",
+											"    pm.expect(respuestaJson.estado).to.equal(\"error\");\r",
+											"    pm.expect(respuestaJson.mensaje).to.be.an(\"string\");\r",
+											"    pm.expect(respuestaJson.mensaje).to.equal(\"Error interno.\");\r",
+											"})"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{servidor}}/api/v1/usuarios",
+									"host": [
+										"{{servidor}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"usuarios"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "1.2.2 - (Sin credenciales) No puedo leer un usuario con su ID",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"El código de la respuesta no es 200\", function () {\r",
+											"    pm.expect(pm.response.code).to.not.equal(200);\r",
+											"})\r",
+											"\r",
+											"pm.test(\"El código de la respuesta es 401\", function () {\r",
+											"    pm.expect(pm.response.code).to.equal(401);\r",
+											"})\r",
+											"\r",
+											"pm.test(\"Respuesta recibida\", function () {\r",
+											"    pm.response.to.be.withBody;\r",
+											"})\r",
+											"\r",
+											"pm.test(\"La respuesta es un JSON\", function () {\r",
+											"    pm.response.to.be.json;\r",
+											"})\r",
+											"\r",
+											"pm.test(\"He recibido un error correctamente formado\", function () {\r",
+											"    const respuestaJson = pm.response.json();\r",
+											"    pm.expect(respuestaJson).to.be.an(\"object\");\r",
+											"    pm.expect(respuestaJson.código).to.be.a(\"number\");\r",
+											"    pm.expect(respuestaJson.estado).to.be.a(\"string\");\r",
+											"    pm.expect(respuestaJson.estado).to.equal(\"error\");\r",
+											"    pm.expect(respuestaJson.mensaje).to.be.an(\"string\");\r",
+											"    pm.expect(respuestaJson.mensaje).to.equal(\"Error interno.\");\r",
+											"})"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{servidor}}/api/v1/usuario/0",
+									"host": [
+										"{{servidor}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"usuario",
+										"0"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "1.2.3 - (Sin credenciales) No puedo crear un nuevo usuario",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"El código de la respuesta no es 200\", function () {\r",
+											"    pm.expect(pm.response.code).to.not.equal(200);\r",
+											"})\r",
+											"\r",
+											"pm.test(\"El código de la respuesta es 401\", function () {\r",
+											"    pm.expect(pm.response.code).to.equal(401);\r",
+											"})\r",
+											"\r",
+											"pm.test(\"Respuesta recibida\", function () {\r",
+											"    pm.response.to.be.withBody;\r",
+											"})\r",
+											"\r",
+											"pm.test(\"La respuesta es un JSON\", function () {\r",
+											"    pm.response.to.be.json;\r",
+											"})\r",
+											"\r",
+											"pm.test(\"He recibido un error correctamente formado\", function () {\r",
+											"    const respuestaJson = pm.response.json();\r",
+											"    pm.expect(respuestaJson).to.be.an(\"object\");\r",
+											"    pm.expect(respuestaJson.código).to.be.a(\"number\");\r",
+											"    pm.expect(respuestaJson.estado).to.be.a(\"string\");\r",
+											"    pm.expect(respuestaJson.estado).to.equal(\"error\");\r",
+											"    pm.expect(respuestaJson.mensaje).to.be.an(\"string\");\r",
+											"    pm.expect(respuestaJson.mensaje).to.equal(\"Error interno.\");\r",
+											"})"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"id\": 0,\r\n    \"nombre\": \"usuario288\",\r\n    \"clave\": \"\",\r\n    \"roles\": []\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{servidor}}/api/v1/usuario",
+									"host": [
+										"{{servidor}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"usuario"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "1.2.4 - (Sin credenciales) No puedo editar un usuario con su ID",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"El código de la respuesta no es 200\", function () {\r",
+											"    pm.expect(pm.response.code).to.not.equal(200);\r",
+											"})\r",
+											"\r",
+											"pm.test(\"El código de la respuesta es 401\", function () {\r",
+											"    pm.expect(pm.response.code).to.equal(401);\r",
+											"})\r",
+											"\r",
+											"pm.test(\"Respuesta recibida\", function () {\r",
+											"    pm.response.to.be.withBody;\r",
+											"})\r",
+											"\r",
+											"pm.test(\"La respuesta es un JSON\", function () {\r",
+											"    pm.response.to.be.json;\r",
+											"})\r",
+											"\r",
+											"pm.test(\"He recibido un error correctamente formado\", function () {\r",
+											"    const respuestaJson = pm.response.json();\r",
+											"    pm.expect(respuestaJson).to.be.an(\"object\");\r",
+											"    pm.expect(respuestaJson.código).to.be.a(\"number\");\r",
+											"    pm.expect(respuestaJson.estado).to.be.a(\"string\");\r",
+											"    pm.expect(respuestaJson.estado).to.equal(\"error\");\r",
+											"    pm.expect(respuestaJson.mensaje).to.be.an(\"string\");\r",
+											"    pm.expect(respuestaJson.mensaje).to.equal(\"Error interno.\");\r",
+											"})"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "PATCH",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"id\": 0,\r\n    \"nombre\": \"usuario288\",\r\n    \"clave\": \"\",\r\n    \"roles\": []\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{servidor}}/api/v1/usuario/1",
+									"host": [
+										"{{servidor}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"usuario",
+										"1"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "1.2.5 - (Sin credenciales) No puedo borrar un usuario con su ID",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"El código de la respuesta no es 200\", function () {\r",
+											"    pm.expect(pm.response.code).to.not.equal(200);\r",
+											"})\r",
+											"\r",
+											"pm.test(\"El código de la respuesta es 401\", function () {\r",
+											"    pm.expect(pm.response.code).to.equal(401);\r",
+											"})\r",
+											"\r",
+											"pm.test(\"Respuesta recibida\", function () {\r",
+											"    pm.response.to.be.withBody;\r",
+											"})\r",
+											"\r",
+											"pm.test(\"La respuesta es un JSON\", function () {\r",
+											"    pm.response.to.be.json;\r",
+											"})\r",
+											"\r",
+											"pm.test(\"He recibido un error correctamente formado\", function () {\r",
+											"    const respuestaJson = pm.response.json();\r",
+											"    pm.expect(respuestaJson).to.be.an(\"object\");\r",
+											"    pm.expect(respuestaJson.código).to.be.a(\"number\");\r",
+											"    pm.expect(respuestaJson.estado).to.be.a(\"string\");\r",
+											"    pm.expect(respuestaJson.estado).to.equal(\"error\");\r",
+											"    pm.expect(respuestaJson.mensaje).to.be.an(\"string\");\r",
+											"    pm.expect(respuestaJson.mensaje).to.equal(\"Error interno.\");\r",
+											"})"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{servidor}}/api/v1/usuario/5",
+									"host": [
+										"{{servidor}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"usuario",
+										"5"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "1.3 - Sesiones",
+					"item": [
+						{
+							"name": "1.3.1 - (Sin credenciales) No puedo leer el secreto de la sesión",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"El código de la respuesta no es 200\", function () {\r",
+											"    pm.expect(pm.response.code).to.not.equal(200);\r",
+											"})\r",
+											"\r",
+											"pm.test(\"El código de la respuesta es 401\", function () {\r",
+											"    pm.expect(pm.response.code).to.equal(401);\r",
+											"})\r",
+											"\r",
+											"pm.test(\"Respuesta recibida\", function () {\r",
+											"    pm.response.to.be.withBody;\r",
+											"})\r",
+											"\r",
+											"pm.test(\"La respuesta es un JSON\", function () {\r",
+											"    pm.response.to.be.json;\r",
+											"})\r",
+											"\r",
+											"pm.test(\"He recibido un objeto correctamente formado\", function () {\r",
+											"    const respuestaJson = pm.response.json();\r",
+											"    pm.expect(respuestaJson).to.be.an(\"object\");\r",
+											"    pm.expect(respuestaJson.código).to.be.a(\"number\");\r",
+											"    pm.expect(respuestaJson.estado).to.be.a(\"string\");\r",
+											"    pm.expect(respuestaJson.mensaje).to.be.a(\"string\");\r",
+											"})"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{servidor}}/api/v1/sesión",
+									"host": [
+										"{{servidor}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"sesión"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "2 - Obteniendo credenciales",
+			"item": [
+				{
+					"name": "2.1 - (Sin credenciales) No puedo leer el secreto de la sesión",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"El código de la respuesta no es 200\", function () {\r",
+									"    pm.expect(pm.response.code).to.not.equal(200);\r",
+									"})\r",
+									"\r",
+									"pm.test(\"El código de la respuesta es 401\", function () {\r",
+									"    pm.expect(pm.response.code).to.equal(401);\r",
+									"})\r",
+									"\r",
+									"pm.test(\"Respuesta recibida\", function () {\r",
+									"    pm.response.to.be.withBody;\r",
+									"})\r",
+									"\r",
+									"pm.test(\"La respuesta es un JSON\", function () {\r",
+									"    pm.response.to.be.json;\r",
+									"})\r",
+									"\r",
+									"pm.test(\"He recibido un objeto correctamente formado\", function () {\r",
+									"    const respuestaJson = pm.response.json();\r",
+									"    pm.expect(respuestaJson).to.be.an(\"object\");\r",
+									"    pm.expect(respuestaJson.código).to.be.a(\"number\");\r",
+									"    pm.expect(respuestaJson.estado).to.be.a(\"string\");\r",
+									"    pm.expect(respuestaJson.mensaje).to.be.a(\"string\");\r",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{servidor}}/api/v1/sesión",
+							"host": [
+								"{{servidor}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"sesión"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "2.2 - (Usuario incorrecto) No puedo crear una sesión",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"El código de la respuesta no es 200\", function () {\r",
+									"    pm.expect(pm.response.code).to.not.equal(200);\r",
+									"})\r",
+									"\r",
+									"pm.test(\"El código de la respuesta es 401\", function () {\r",
+									"    pm.expect(pm.response.code).to.equal(401);\r",
+									"})\r",
+									"\r",
+									"pm.test(\"Respuesta recibida\", function () {\r",
+									"    pm.response.to.be.withBody;\r",
+									"})\r",
+									"\r",
+									"pm.test(\"La respuesta es un JSON\", function () {\r",
+									"    pm.response.to.be.json;\r",
+									"})\r",
+									"\r",
+									"pm.test(\"He recibido un objeto correctamente formado\", function () {\r",
+									"    const respuestaJson = pm.response.json();\r",
+									"    pm.expect(respuestaJson).to.be.an(\"object\");\r",
+									"    pm.expect(respuestaJson.código).to.be.a(\"number\");\r",
+									"    pm.expect(respuestaJson.estado).to.be.a(\"string\");\r",
+									"    pm.expect(respuestaJson.mensaje).to.be.an(\"string\");\r",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"usuario\": \"Admin\",\r\n    \"clave\": \"123456\"\r\n}"
+						},
+						"url": {
+							"raw": "{{servidor}}/api/v1/sesión",
+							"host": [
+								"{{servidor}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"sesión"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "2.3 - (Clave incorrecta) No puedo crear una sesión",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"El código de la respuesta no es 200\", function () {\r",
+									"    pm.expect(pm.response.code).to.not.equal(200);\r",
+									"})\r",
+									"\r",
+									"pm.test(\"El código de la respuesta es 401\", function () {\r",
+									"    pm.expect(pm.response.code).to.equal(401);\r",
+									"})\r",
+									"\r",
+									"pm.test(\"Respuesta recibida\", function () {\r",
+									"    pm.response.to.be.withBody;\r",
+									"})\r",
+									"\r",
+									"pm.test(\"La respuesta es un JSON\", function () {\r",
+									"    pm.response.to.be.json;\r",
+									"})\r",
+									"\r",
+									"pm.test(\"He recibido un objeto correctamente formado\", function () {\r",
+									"    const respuestaJson = pm.response.json();\r",
+									"    pm.expect(respuestaJson).to.be.an(\"object\");\r",
+									"    pm.expect(respuestaJson.código).to.be.a(\"number\");\r",
+									"    pm.expect(respuestaJson.estado).to.be.a(\"string\");\r",
+									"    pm.expect(respuestaJson.mensaje).to.be.an(\"string\");\r",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"usuario\": \"Administrador\",\r\n    \"clave\": \"1234\"\r\n}"
+						},
+						"url": {
+							"raw": "{{servidor}}/api/v1/sesión",
+							"host": [
+								"{{servidor}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"sesión"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "2.4 - (Credenciales correctas) Puedo crear una sesión",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"El código de la respuesta es 200\", function () {\r",
+									"    pm.expect(pm.response.code).to.equal(200);\r",
+									"})\r",
+									"\r",
+									"pm.test(\"Respuesta recibida\", function () {\r",
+									"    pm.response.to.be.withBody;\r",
+									"})\r",
+									"\r",
+									"pm.test(\"La respuesta es un JSON\", function () {\r",
+									"    pm.response.to.be.json;\r",
+									"})\r",
+									"\r",
+									"pm.test(\"He recibido un objeto correctamente formado\", function () {\r",
+									"    const respuestaJson = pm.response.json();\r",
+									"    pm.expect(respuestaJson).to.be.an(\"object\");\r",
+									"    pm.expect(respuestaJson.código).to.be.undefined;\r",
+									"    pm.expect(respuestaJson.estado).to.be.undefined;\r",
+									"    pm.expect(respuestaJson.mensaje).to.be.an(\"string\");\r",
+									"    pm.expect(respuestaJson.mensaje).to.equal(\"Acceso concedido.\");\r",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"usuario\": \"Administrador\",\r\n    \"clave\": \"123456\"\r\n}"
+						},
+						"url": {
+							"raw": "{{servidor}}/api/v1/sesión",
+							"host": [
+								"{{servidor}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"sesión"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "2.5 - (Con credenciales) Puedo leer el secreto de la sesión",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"El código de la respuesta es 200\", function () {\r",
+									"    pm.expect(pm.response.code).to.equal(200);\r",
+									"})\r",
+									"\r",
+									"pm.test(\"Respuesta recibida\", function () {\r",
+									"    pm.response.to.be.withBody;\r",
+									"})\r",
+									"\r",
+									"pm.test(\"La respuesta es un JSON\", function () {\r",
+									"    pm.response.to.be.json;\r",
+									"})\r",
+									"\r",
+									"pm.test(\"He recibido un objeto correctamente formado\", function () {\r",
+									"    const respuestaJson = pm.response.json();\r",
+									"    pm.expect(respuestaJson).to.be.an(\"object\");\r",
+									"    pm.expect(respuestaJson.código).to.be.undefined;\r",
+									"    pm.expect(respuestaJson.estado).to.be.undefined;\r",
+									"    pm.expect(respuestaJson.mensaje).to.be.a(\"string\");\r",
+									"    pm.expect(respuestaJson.mensaje).to.equal(\"Secreto muy valioso.\");\r",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{servidor}}/api/v1/sesión",
+							"host": [
+								"{{servidor}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"sesión"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "2.6 - (Con credenciales) Puedo cerrar la sesión",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"El código de la respuesta es 200\", function () {\r",
+									"    pm.expect(pm.response.code).to.equal(200);\r",
+									"})\r",
+									"\r",
+									"pm.test(\"Respuesta recibida\", function () {\r",
+									"    pm.response.to.be.withBody;\r",
+									"})\r",
+									"\r",
+									"pm.test(\"La respuesta es un JSON\", function () {\r",
+									"    pm.response.to.be.json;\r",
+									"})\r",
+									"\r",
+									"pm.test(\"He recibido un objeto correctamente formado\", function () {\r",
+									"    const respuestaJson = pm.response.json();\r",
+									"    pm.expect(respuestaJson).to.be.an(\"object\");\r",
+									"    pm.expect(respuestaJson.código).to.be.undefined;\r",
+									"    pm.expect(respuestaJson.estado).to.be.undefined;\r",
+									"    pm.expect(respuestaJson.mensaje).to.be.an(\"string\");\r",
+									"    pm.expect(respuestaJson.mensaje).to.equal(\"Sesión cerrada.\");\r",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{servidor}}/api/v1/sesión",
+							"host": [
+								"{{servidor}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"sesión"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "2.7 - (Sin credenciales) No puedo leer el secreto de la sesión",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"El código de la respuesta no es 200\", function () {\r",
+									"    pm.expect(pm.response.code).to.not.equal(200);\r",
+									"})\r",
+									"\r",
+									"pm.test(\"El código de la respuesta es 401\", function () {\r",
+									"    pm.expect(pm.response.code).to.equal(401);\r",
+									"})\r",
+									"\r",
+									"pm.test(\"Respuesta recibida\", function () {\r",
+									"    pm.response.to.be.withBody;\r",
+									"})\r",
+									"\r",
+									"pm.test(\"La respuesta es un JSON\", function () {\r",
+									"    pm.response.to.be.json;\r",
+									"})\r",
+									"\r",
+									"pm.test(\"He recibido un objeto correctamente formado\", function () {\r",
+									"    const respuestaJson = pm.response.json();\r",
+									"    pm.expect(respuestaJson).to.be.an(\"object\");\r",
+									"    pm.expect(respuestaJson.código).to.be.a(\"number\");\r",
+									"    pm.expect(respuestaJson.estado).to.be.a(\"string\");\r",
+									"    pm.expect(respuestaJson.mensaje).to.be.an(\"string\");\r",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{servidor}}/api/v1/sesión",
+							"host": [
+								"{{servidor}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"sesión"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "3 - Usuario genérico",
+			"item": [
+				{
+					"name": "3.1 - Obtén acreditación de usuario genérico",
+					"item": [
+						{
+							"name": "3.1.1 - (Usuario genérico) Crea sesión",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"El código de la respuesta es 200\", function () {\r",
+											"    pm.expect(pm.response.code).to.equal(200);\r",
+											"})\r",
+											"\r",
+											"pm.test(\"Respuesta recibida\", function () {\r",
+											"    pm.response.to.be.withBody;\r",
+											"})\r",
+											"\r",
+											"pm.test(\"La respuesta es un JSON\", function () {\r",
+											"    pm.response.to.be.json;\r",
+											"})\r",
+											"\r",
+											"pm.test(\"He recibido un objeto correctamente formado\", function () {\r",
+											"    const respuestaJson = pm.response.json();\r",
+											"    pm.expect(respuestaJson).to.be.an(\"object\");\r",
+											"    pm.expect(respuestaJson.código).to.be.undefined;\r",
+											"    pm.expect(respuestaJson.estado).to.be.undefined;\r",
+											"    pm.expect(respuestaJson.mensaje).to.be.an(\"string\");\r",
+											"    pm.expect(respuestaJson.mensaje).to.equal(\"Acceso concedido.\");\r",
+											"})"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"usuario\": \"usuario\",\r\n    \"clave\": \"1234\"\r\n}"
+								},
+								"url": {
+									"raw": "{{servidor}}/api/v1/sesión",
+									"host": [
+										"{{servidor}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"sesión"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "3.2 - (Usuario genérico) No puede leer los datos de otros usuarios",
+					"item": [
+						{
+							"name": "3.2.1 - (Usuario genérico) No puede leer la lista con los datos del resto de usuarios",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"El código de la respuesta no es 200\", function () {\r",
+											"    pm.expect(pm.response.code).to.not.equal(200);\r",
+											"})\r",
+											"\r",
+											"pm.test(\"El código de la respuesta es 401\", function () {\r",
+											"    pm.expect(pm.response.code).to.equal(401);\r",
+											"})\r",
+											"\r",
+											"pm.test(\"Respuesta recibida\", function () {\r",
+											"    pm.response.to.be.withBody;\r",
+											"})\r",
+											"\r",
+											"pm.test(\"La respuesta es un JSON\", function () {\r",
+											"    pm.response.to.be.json;\r",
+											"})\r",
+											"\r",
+											"pm.test(\"He recibido un error correctamente formado\", function () {\r",
+											"    const respuestaJson = pm.response.json();\r",
+											"    pm.expect(respuestaJson).to.be.an(\"object\");\r",
+											"    pm.expect(respuestaJson.código).to.be.a(\"number\");\r",
+											"    pm.expect(respuestaJson.estado).to.be.a(\"string\");\r",
+											"    pm.expect(respuestaJson.estado).to.equal(\"error\");\r",
+											"    pm.expect(respuestaJson.mensaje).to.be.an(\"string\");\r",
+											"    pm.expect(respuestaJson.mensaje).to.equal(\"Error interno.\");\r",
+											"})"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{servidor}}/api/v1/usuarios",
+									"host": [
+										"{{servidor}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"usuarios"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "3.2.2 - (Usuario genérico) No puede leer los datos de otro usuario con ID",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"El código de la respuesta no es 200\", function () {\r",
+											"    pm.expect(pm.response.code).to.not.equal(200);\r",
+											"})\r",
+											"\r",
+											"pm.test(\"El código de la respuesta es 401\", function () {\r",
+											"    pm.expect(pm.response.code).to.equal(401);\r",
+											"})\r",
+											"\r",
+											"pm.test(\"Respuesta recibida\", function () {\r",
+											"    pm.response.to.be.withBody;\r",
+											"})\r",
+											"\r",
+											"pm.test(\"La respuesta es un JSON\", function () {\r",
+											"    pm.response.to.be.json;\r",
+											"})\r",
+											"\r",
+											"pm.test(\"He recibido un error correctamente formado\", function () {\r",
+											"    const respuestaJson = pm.response.json();\r",
+											"    pm.expect(respuestaJson).to.be.an(\"object\");\r",
+											"    pm.expect(respuestaJson.código).to.be.a(\"number\");\r",
+											"    pm.expect(respuestaJson.estado).to.be.a(\"string\");\r",
+											"    pm.expect(respuestaJson.estado).to.equal(\"error\");\r",
+											"    pm.expect(respuestaJson.mensaje).to.be.an(\"string\");\r",
+											"    pm.expect(respuestaJson.mensaje).to.equal(\"Error interno.\");\r",
+											"})"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{servidor}}/api/v1/usuario/0",
+									"host": [
+										"{{servidor}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"usuario",
+										"0"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "3.2.3 - (Usuario genérico) No puede crear un nuevo usuario",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"El código de la respuesta no es 200\", function () {\r",
+											"    pm.expect(pm.response.code).to.not.equal(200);\r",
+											"})\r",
+											"\r",
+											"pm.test(\"El código de la respuesta es 401\", function () {\r",
+											"    pm.expect(pm.response.code).to.equal(401);\r",
+											"})\r",
+											"\r",
+											"pm.test(\"Respuesta recibida\", function () {\r",
+											"    pm.response.to.be.withBody;\r",
+											"})\r",
+											"\r",
+											"pm.test(\"La respuesta es un JSON\", function () {\r",
+											"    pm.response.to.be.json;\r",
+											"})\r",
+											"\r",
+											"pm.test(\"He recibido un error correctamente formado\", function () {\r",
+											"    const respuestaJson = pm.response.json();\r",
+											"    pm.expect(respuestaJson).to.be.an(\"object\");\r",
+											"    pm.expect(respuestaJson.código).to.be.a(\"number\");\r",
+											"    pm.expect(respuestaJson.estado).to.be.a(\"string\");\r",
+											"    pm.expect(respuestaJson.estado).to.equal(\"error\");\r",
+											"    pm.expect(respuestaJson.mensaje).to.be.an(\"string\");\r",
+											"    pm.expect(respuestaJson.mensaje).to.equal(\"Error interno.\");\r",
+											"})"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"id\": 0,\r\n    \"nombre\": \"usuario288\",\r\n    \"clave\": \"\",\r\n    \"roles\": []\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{servidor}}/api/v1/usuario",
+									"host": [
+										"{{servidor}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"usuario"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "3.2.4 - (Usuario genérico) No puede editar un usuario con ID",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"El código de la respuesta no es 200\", function () {\r",
+											"    pm.expect(pm.response.code).to.not.equal(200);\r",
+											"})\r",
+											"\r",
+											"pm.test(\"El código de la respuesta es 401\", function () {\r",
+											"    pm.expect(pm.response.code).to.equal(401);\r",
+											"})\r",
+											"\r",
+											"pm.test(\"Respuesta recibida\", function () {\r",
+											"    pm.response.to.be.withBody;\r",
+											"})\r",
+											"\r",
+											"pm.test(\"La respuesta es un JSON\", function () {\r",
+											"    pm.response.to.be.json;\r",
+											"})\r",
+											"\r",
+											"pm.test(\"He recibido un error correctamente formado\", function () {\r",
+											"    const respuestaJson = pm.response.json();\r",
+											"    pm.expect(respuestaJson).to.be.an(\"object\");\r",
+											"    pm.expect(respuestaJson.código).to.be.a(\"number\");\r",
+											"    pm.expect(respuestaJson.estado).to.be.a(\"string\");\r",
+											"    pm.expect(respuestaJson.estado).to.equal(\"error\");\r",
+											"    pm.expect(respuestaJson.mensaje).to.be.an(\"string\");\r",
+											"    pm.expect(respuestaJson.mensaje).to.equal(\"Error interno.\");\r",
+											"})"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "PATCH",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"id\": 0,\r\n    \"nombre\": \"usuario288\",\r\n    \"clave\": \"\",\r\n    \"roles\": []\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{servidor}}/api/v1/usuario/1",
+									"host": [
+										"{{servidor}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"usuario",
+										"1"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "3.2.5 - (Usuario genérico) No puede borrar un usuario con ID",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"El código de la respuesta no es 202\", function () {\r",
+											"    pm.expect(pm.response.code).to.not.equal(202);\r",
+											"})\r",
+											"\r",
+											"pm.test(\"El código de la respuesta es 401\", function () {\r",
+											"    pm.expect(pm.response.code).to.equal(401);\r",
+											"})\r",
+											"\r",
+											"pm.test(\"Respuesta recibida\", function () {\r",
+											"    pm.response.to.be.withBody;\r",
+											"})\r",
+											"\r",
+											"pm.test(\"La respuesta es un JSON\", function () {\r",
+											"    pm.response.to.be.json;\r",
+											"})\r",
+											"\r",
+											"pm.test(\"He recibido un error correctamente formado\", function () {\r",
+											"    const respuestaJson = pm.response.json();\r",
+											"    pm.expect(respuestaJson).to.be.an(\"object\");\r",
+											"    pm.expect(respuestaJson.código).to.be.a(\"number\");\r",
+											"    pm.expect(respuestaJson.estado).to.be.a(\"string\");\r",
+											"    pm.expect(respuestaJson.estado).to.equal(\"error\");\r",
+											"    pm.expect(respuestaJson.mensaje).to.be.an(\"string\");\r",
+											"    pm.expect(respuestaJson.mensaje).to.equal(\"Error interno.\");\r",
+											"})"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{servidor}}/api/v1/usuario/5",
+									"host": [
+										"{{servidor}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"usuario",
+										"5"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "3.3 - (Usuario genérico) Puede leer sus propios datos",
+					"item": [
+						{
+							"name": "3.3.1 - (Usuario genérico) Puede leer sus datos de usuario si conoce su ID",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"El código de la respuesta es 200\", function () {\r",
+											"    pm.expect(pm.response.code).to.equal(200);\r",
+											"})\r",
+											"\r",
+											"pm.test(\"Respuesta recibida\", function () {\r",
+											"    pm.response.to.be.withBody;\r",
+											"})\r",
+											"\r",
+											"pm.test(\"La respuesta es un JSON\", function () {\r",
+											"    pm.response.to.be.json;\r",
+											"})\r",
+											"\r",
+											"pm.test(\"He recibido un error correctamente formado\", function () {\r",
+											"    const respuestaJson = pm.response.json();\r",
+											"    pm.expect(respuestaJson).to.be.an(\"object\");\r",
+											"    pm.expect(respuestaJson.código).to.be.a(\"number\");\r",
+											"    pm.expect(respuestaJson.estado).to.be.a(\"string\");\r",
+											"    pm.expect(respuestaJson.estado).to.equal(\"error\");\r",
+											"    pm.expect(respuestaJson.mensaje).to.be.an(\"string\");\r",
+											"    pm.expect(respuestaJson.mensaje).to.equal(\"Error interno.\");\r",
+											"})"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{servidor}}/api/v1/usuario/2",
+									"host": [
+										"{{servidor}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"usuario",
+										"2"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "3.4 - (Usuario genérico) No puede borrarse a sí mismo",
+					"item": []
+				},
+				{
+					"name": "3.5 - (Usuario genérico) Tiene acceso limitado a los Documentos",
+					"item": [
+						{
+							"name": "3.5.1 - (Usuario genérico) No puede leer la lista de documentos",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"El código de la respuesta no es 200\", function () {\r",
+											"    pm.expect(pm.response.code).to.not.equal(200);\r",
+											"})\r",
+											"\r",
+											"pm.test(\"El código de la respuesta es 401\", function () {\r",
+											"    pm.expect(pm.response.code).to.equal(401);\r",
+											"})\r",
+											"\r",
+											"pm.test(\"Respuesta recibida\", function () {\r",
+											"    pm.response.to.be.withBody;\r",
+											"})\r",
+											"\r",
+											"pm.test(\"La respuesta es un JSON\", function () {\r",
+											"    pm.response.to.be.json;\r",
+											"})\r",
+											"\r",
+											"pm.test(\"He recibido un error correctamente formado\", function () {\r",
+											"    const respuestaJson = pm.response.json();\r",
+											"    pm.expect(respuestaJson).to.be.an(\"object\");\r",
+											"    pm.expect(respuestaJson.código).to.be.a(\"number\");\r",
+											"    pm.expect(respuestaJson.estado).to.be.a(\"string\");\r",
+											"    pm.expect(respuestaJson.estado).to.equal(\"error\");\r",
+											"    pm.expect(respuestaJson.mensaje).to.be.an(\"string\");\r",
+											"    pm.expect(respuestaJson.mensaje).to.equal(\"Error interno.\");\r",
+											"})"
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"const jarra = pm.cookies.jar();\r",
+											"\r",
+											"jarra.clear(pm.request.url, function (error) {\r",
+											"  console.log(error);\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{servidor}}/api/v1/documentos",
+									"host": [
+										"{{servidor}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"documentos"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "3.5.2 - (Usuario genérico) Sí puede leer un documento con su ID",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"El código de la respuesta es 200\", function () {\r",
+											"    pm.expect(pm.response.code).to.equal(200);\r",
+											"})\r",
+											"\r",
+											"pm.test(\"Respuesta recibida\", function () {\r",
+											"    pm.response.to.be.withBody;\r",
+											"})\r",
+											"\r",
+											"pm.test(\"La respuesta es un JSON\", function () {\r",
+											"    pm.response.to.be.json;\r",
+											"})\r",
+											"\r",
+											"const respuestaJson = pm.response.json();\r",
+											"pm.test(\"He recibido un 'Documento' correctamente formado\", function () {\r",
+											"    pm.expect(respuestaJson).to.be.an(\"object\");\r",
+											"    pm.expect(respuestaJson.contenido).to.be.a(\"string\");\r",
+											"    pm.expect(respuestaJson.título).to.be.a(\"string\");\r",
+											"    pm.expect(respuestaJson.hijos).to.be.an(\"array\");\r",
+											"    pm.expect(respuestaJson.id).to.be.a(\"number\");\r",
+											"    pm.expect(respuestaJson.padre).to.be.a(\"number\");\r",
+											"})\r",
+											"\r",
+											"pm.test(\"He recibido un Documento con el ID especificado\", function () {\r",
+											"    pm.expect(respuestaJson.id).to.equal(parseInt(pm.collectionVariables.get(\"id_doc_que_pedir\")));\r",
+											"})"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{servidor}}/api/v1/documento/{{id_doc_que_pedir}}",
+									"host": [
+										"{{servidor}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"documento",
+										"{{id_doc_que_pedir}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "3.5.3 - (Usuario genérico) No puede crear un nuevo documento",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"El código de la respuesta no es 200\", function () {\r",
+											"    pm.expect(pm.response.code).to.not.equal(200);\r",
+											"})\r",
+											"\r",
+											"pm.test(\"El código de la respuesta es 401\", function () {\r",
+											"    pm.expect(pm.response.code).to.equal(401);\r",
+											"})\r",
+											"\r",
+											"pm.test(\"Respuesta recibida\", function () {\r",
+											"    pm.response.to.be.withBody;\r",
+											"})\r",
+											"\r",
+											"pm.test(\"La respuesta es un JSON\", function () {\r",
+											"    pm.response.to.be.json;\r",
+											"})\r",
+											"\r",
+											"pm.test(\"He recibido un error correctamente formado\", function () {\r",
+											"    const respuestaJson = pm.response.json();\r",
+											"    pm.expect(respuestaJson).to.be.an(\"object\");\r",
+											"    pm.expect(respuestaJson.código).to.be.a(\"number\");\r",
+											"    pm.expect(respuestaJson.estado).to.be.a(\"string\");\r",
+											"    pm.expect(respuestaJson.estado).to.equal(\"error\");\r",
+											"    pm.expect(respuestaJson.mensaje).to.be.an(\"string\");\r",
+											"    pm.expect(respuestaJson.mensaje).to.equal(\"Error interno.\");\r",
+											"})"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"id\": 0,\r\n    \"padre\": 0,\r\n    \"título\": \"Hola\",\r\n    \"contenido\": \"\",\r\n    \"hijos\": []\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{servidor}}/api/v1/documento",
+									"host": [
+										"{{servidor}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"documento"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "3.5.4 - (Usuario genérico)  No puede editar un documento con su ID",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"El código de la respuesta no es 200\", function () {\r",
+											"    pm.expect(pm.response.code).to.not.equal(200);\r",
+											"})\r",
+											"\r",
+											"pm.test(\"El código de la respuesta es 401\", function () {\r",
+											"    pm.expect(pm.response.code).to.equal(401);\r",
+											"})\r",
+											"\r",
+											"pm.test(\"Respuesta recibida\", function () {\r",
+											"    pm.response.to.be.withBody;\r",
+											"})\r",
+											"\r",
+											"pm.test(\"La respuesta es un JSON\", function () {\r",
+											"    pm.response.to.be.json;\r",
+											"})\r",
+											"\r",
+											"pm.test(\"He recibido un objeto correctamente formado\", function () {\r",
+											"    const respuestaJson = pm.response.json();\r",
+											"    pm.expect(respuestaJson).to.be.an(\"object\");\r",
+											"    pm.expect(respuestaJson.código).to.be.a(\"number\");\r",
+											"    pm.expect(respuestaJson.estado).to.be.a(\"string\");\r",
+											"    pm.expect(respuestaJson.mensaje).to.be.an(\"string\");\r",
+											"})"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "PATCH",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"id\": 1,\r\n    \"padre\": 0,\r\n    \"título\": \"Adiós\",\r\n    \"contenido\": \"olakase\",\r\n    \"hijos\": []\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{servidor}}/api/v1/documento/1",
+									"host": [
+										"{{servidor}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"documento",
+										"1"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "3.5.5 - (Usuario genérico) No puede borrar un documento con su ID",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"El código de la respuesta no es 200\", function () {\r",
+											"    pm.expect(pm.response.code).to.not.equal(200);\r",
+											"})\r",
+											"\r",
+											"pm.test(\"El código de la respuesta es 401\", function () {\r",
+											"    pm.expect(pm.response.code).to.equal(401);\r",
+											"})\r",
+											"\r",
+											"pm.test(\"Respuesta recibida\", function () {\r",
+											"    pm.response.to.be.withBody;\r",
+											"})\r",
+											"\r",
+											"pm.test(\"La respuesta es un JSON\", function () {\r",
+											"    pm.response.to.be.json;\r",
+											"})\r",
+											"\r",
+											"pm.test(\"He recibido un objeto correctamente formado\", function () {\r",
+											"    const respuestaJson = pm.response.json();\r",
+											"    pm.expect(respuestaJson).to.be.an(\"object\");\r",
+											"    pm.expect(respuestaJson.código).to.be.a(\"number\");\r",
+											"    pm.expect(respuestaJson.estado).to.be.a(\"string\");\r",
+											"    pm.expect(respuestaJson.mensaje).to.be.an(\"string\");\r",
+											"})"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{servidor}}/api/v1/documento/1",
+									"host": [
+										"{{servidor}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"documento",
+										"1"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "3.6 - Cierra sesión",
+					"item": [
+						{
+							"name": "3.6.1 - Cierra sesión",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"El código de la respuesta es 200\", function () {\r",
+											"    pm.expect(pm.response.code).to.equal(200);\r",
+											"})\r",
+											"\r",
+											"pm.test(\"Respuesta recibida\", function () {\r",
+											"    pm.response.to.be.withBody;\r",
+											"})\r",
+											"\r",
+											"pm.test(\"La respuesta es un JSON\", function () {\r",
+											"    pm.response.to.be.json;\r",
+											"})\r",
+											"\r",
+											"pm.test(\"He recibido un objeto correctamente formado\", function () {\r",
+											"    const respuestaJson = pm.response.json();\r",
+											"    pm.expect(respuestaJson).to.be.an(\"object\");\r",
+											"    pm.expect(respuestaJson.código).to.be.undefined;\r",
+											"    pm.expect(respuestaJson.estado).to.be.undefined;\r",
+											"    pm.expect(respuestaJson.mensaje).to.be.an(\"string\");\r",
+											"    pm.expect(respuestaJson.mensaje).to.equal(\"Sesión cerrada.\");\r",
+											"})"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": {
+									"raw": "{{servidor}}/api/v1/sesión",
+									"host": [
+										"{{servidor}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"sesión"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "4 - Rol de Editor",
+			"item": [
+				{
+					"name": "4.1 - Obtén acreditación de Editor",
+					"item": [
+						{
+							"name": "4.1.1 - (Editor) Crea sesión",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"El código de la respuesta es 200\", function () {\r",
+											"    pm.expect(pm.response.code).to.equal(200);\r",
+											"})\r",
+											"\r",
+											"pm.test(\"Respuesta recibida\", function () {\r",
+											"    pm.response.to.be.withBody;\r",
+											"})\r",
+											"\r",
+											"pm.test(\"La respuesta es un JSON\", function () {\r",
+											"    pm.response.to.be.json;\r",
+											"})\r",
+											"\r",
+											"pm.test(\"He recibido un objeto correctamente formado\", function () {\r",
+											"    const respuestaJson = pm.response.json();\r",
+											"    pm.expect(respuestaJson).to.be.an(\"object\");\r",
+											"    pm.expect(respuestaJson.código).to.be.undefined;\r",
+											"    pm.expect(respuestaJson.estado).to.be.undefined;\r",
+											"    pm.expect(respuestaJson.mensaje).to.be.an(\"string\");\r",
+											"    pm.expect(respuestaJson.mensaje).to.equal(\"Acceso concedido.\");\r",
+											"})"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"usuario\": \"editor\",\r\n    \"clave\": \"1234\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{servidor}}/api/v1/sesión",
+									"host": [
+										"{{servidor}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"sesión"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "4.2 - Editor tiene acceso completo a la gestión de Documentos",
+					"item": [
+						{
+							"name": "4.2.1 - (Editor) Puede leer la lista de documentos",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"El código de la respuesta es 200\", function () {\r",
+											"    pm.expect(pm.response.code).to.equal(200);\r",
+											"})\r",
+											"\r",
+											"pm.test(\"Respuesta recibida\", function () {\r",
+											"    pm.response.to.be.withBody;\r",
+											"})\r",
+											"\r",
+											"pm.test(\"La respuesta es un JSON\", function () {\r",
+											"    pm.response.to.be.json;\r",
+											"})\r",
+											"\r",
+											"pm.test(\"He recibido una lista de Documentos correctamente formada\", function () {\r",
+											"    const respuestaJson = pm.response.json();\r",
+											"    pm.expect(respuestaJson).to.be.an(\"array\");\r",
+											"    pm.expect(respuestaJson.length).to.be.a(\"number\");\r",
+											"    for(let i = 0; i < respuestaJson.length; i++)\r",
+											"    {\r",
+											"        pm.expect(respuestaJson[i]).to.be.an(\"object\");\r",
+											"        pm.expect(respuestaJson[i].contenido).to.be.a(\"string\");\r",
+											"        pm.expect(respuestaJson[i].hijos).to.be.an(\"array\");\r",
+											"        pm.expect(respuestaJson[i].id).to.be.a(\"number\");\r",
+											"        pm.expect(respuestaJson[i].padre).to.be.a(\"number\");\r",
+											"        pm.expect(respuestaJson[i].título).to.be.a(\"string\");\r",
+											"    }\r",
+											"})"
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"const jarra = pm.cookies.jar();\r",
+											"\r",
+											"jarra.clear(pm.request.url, function (error) {\r",
+											"  console.log(error);\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{servidor}}/api/v1/documentos",
+									"host": [
+										"{{servidor}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"documentos"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "4.2.2 - (Editor) Puede crear un nuevo documento",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"El código de la respuesta es 200\", function () {\r",
+											"    pm.expect(pm.response.code).to.equal(200);\r",
+											"})\r",
+											"\r",
+											"pm.test(\"Respuesta recibida\", function () {\r",
+											"    pm.response.to.be.withBody;\r",
+											"})\r",
+											"\r",
+											"pm.test(\"La respuesta es un JSON\", function () {\r",
+											"    pm.response.to.be.json;\r",
+											"})\r",
+											"\r",
+											"pm.test(\"He recibido una confirmación correctamente formada con el ID del nuevo documento\", function () {\r",
+											"    const respuestaJson = pm.response.json();\r",
+											"    pm.expect(respuestaJson).to.be.an(\"object\");\r",
+											"    pm.expect(respuestaJson.estado).to.be.a(\"string\");\r",
+											"    pm.expect(respuestaJson.estado).to.equal(\"ok\");\r",
+											"    pm.expect(respuestaJson.id).to.be.a(\"number\");\r",
+											"    if(respuestaJson.id)\r",
+											"    {\r",
+											"        pm.collectionVariables.set(\"id_doc_creado\", respuestaJson.id.toString());\r",
+											"        postman.setNextRequest(\"4.2.3 - (Editor) Puede leer un documento con su ID\");\r",
+											"    }\r",
+											"    else\r",
+											"    {\r",
+											"        postman.setNextRequest(\"4.4.1 - Cierra sesión\");\r",
+											"    }\r",
+											"})"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"id\": 0,\r\n    \"padre\": 0,\r\n    \"título\": \"Hola\",\r\n    \"contenido\": \"\",\r\n    \"hijos\": []\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{servidor}}/api/v1/documento",
+									"host": [
+										"{{servidor}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"documento"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "4.2.3 - (Editor) Puede leer un documento con su ID",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"El código de la respuesta es 200\", function () {\r",
+											"    pm.expect(pm.response.code).to.equal(200);\r",
+											"})\r",
+											"\r",
+											"pm.test(\"Respuesta recibida\", function () {\r",
+											"    pm.response.to.be.withBody;\r",
+											"})\r",
+											"\r",
+											"pm.test(\"La respuesta es un JSON\", function () {\r",
+											"    pm.response.to.be.json;\r",
+											"})\r",
+											"\r",
+											"const respuestaJson = pm.response.json();\r",
+											"pm.test(\"He recibido un 'Documento' correctamente formado\", function () {\r",
+											"    pm.expect(respuestaJson).to.be.an(\"object\");\r",
+											"    pm.expect(respuestaJson.contenido).to.be.a(\"string\");\r",
+											"    pm.expect(respuestaJson.título).to.be.a(\"string\");\r",
+											"    pm.expect(respuestaJson.hijos).to.be.an(\"array\");\r",
+											"    pm.expect(respuestaJson.id).to.be.a(\"number\");\r",
+											"    pm.expect(respuestaJson.padre).to.be.a(\"number\");\r",
+											"})\r",
+											"\r",
+											"pm.test(\"He recibido un Documento con el ID especificado\", function () {\r",
+											"    pm.expect(respuestaJson.id.toString()).to.equal(pm.collectionVariables.get(\"id_doc_creado\"));\r",
+											"})"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{servidor}}/api/v1/documento/{{id_doc_creado}}",
+									"host": [
+										"{{servidor}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"documento",
+										"{{id_doc_creado}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "4.2.4 - (Editor) Puede editar un documento con su ID",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"El código de la respuesta es 200\", function () {\r",
+											"    pm.expect(pm.response.code).to.equal(200);\r",
+											"})\r",
+											"\r",
+											"pm.test(\"Respuesta recibida\", function () {\r",
+											"    pm.response.to.be.withBody;\r",
+											"})\r",
+											"\r",
+											"pm.test(\"La respuesta es un JSON\", function () {\r",
+											"    pm.response.to.be.json;\r",
+											"})\r",
+											"\r",
+											"const respuestaJson = pm.response.json();\r",
+											"pm.test(\"He recibido un Documento correctamente formado\", function () {\r",
+											"    pm.expect(respuestaJson).to.be.an(\"object\");\r",
+											"    pm.expect(respuestaJson.id).to.be.a(\"number\");\r",
+											"    pm.expect(respuestaJson.padre).to.be.a(\"number\");\r",
+											"    pm.expect(respuestaJson.título).to.be.a(\"string\");\r",
+											"    pm.expect(respuestaJson.contenido).to.be.a(\"string\");\r",
+											"    pm.expect(respuestaJson.hijos).to.be.an(\"array\");\r",
+											"    for(let i = 0; i < respuestaJson.hijos.length; i++)\r",
+											"    {\r",
+											"        pm.expect(respuestaJson.hijos[i]).to.be.a(\"number\");\r",
+											"    }\r",
+											"})\r",
+											"\r",
+											"pm.test(\"He recibido un Documento con el ID especificado\", function () {\r",
+											"    pm.expect(respuestaJson.id.toString()).to.equal(pm.collectionVariables.get(\"id_doc_creado\"));\r",
+											"})"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "PATCH",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"id\": 1,\r\n    \"padre\": 0,\r\n    \"título\": \"Adiós\",\r\n    \"contenido\": \"olakase\",\r\n    \"hijos\": []\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{servidor}}/api/v1/documento/{{id_doc_creado}}",
+									"host": [
+										"{{servidor}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"documento",
+										"{{id_doc_creado}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "4.2.5 - (Editor) Puede borrar un documento con su ID",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"El código de la respuesta es 202\", function () {\r",
+											"    pm.expect(pm.response.code).to.equal(202);\r",
+											"})"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{servidor}}/api/v1/documento/{{id_doc_creado}}",
+									"host": [
+										"{{servidor}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"documento",
+										"{{id_doc_creado}}"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "4.3 - Editor no puede borrar Documentos especiales",
+					"item": [
+						{
+							"name": "4.3.1 - (Editor) No puede borrar un Documento con hijos",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"El código de la respuesta no es 202\", function () {\r",
+											"    pm.expect(pm.response.code).to.not.equal(202);\r",
+											"})\r",
+											"\r",
+											"pm.test(\"El código de la respuesta es 403\", function () {\r",
+											"    pm.expect(pm.response.code).to.equal(403);\r",
+											"})\r",
+											"\r",
+											"pm.test(\"Respuesta recibida\", function () {\r",
+											"    pm.response.to.be.withBody;\r",
+											"})\r",
+											"\r",
+											"pm.test(\"La respuesta es un JSON\", function () {\r",
+											"    pm.response.to.be.json;\r",
+											"})\r",
+											"\r",
+											"pm.test(\"He recibido un error correctamente formado\", function () {\r",
+											"    const respuestaJson = pm.response.json();\r",
+											"    pm.expect(respuestaJson).to.be.an(\"object\");\r",
+											"    pm.expect(respuestaJson.código).to.be.a(\"number\");\r",
+											"    pm.expect(respuestaJson.estado).to.be.a(\"string\");\r",
+											"    pm.expect(respuestaJson.estado).to.equal(\"error\");\r",
+											"    pm.expect(respuestaJson.mensaje).to.be.an(\"string\");\r",
+											"    pm.expect(respuestaJson.mensaje).to.equal(\"Acción prohibida.\");\r",
+											"})"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{servidor}}/api/v1/documento/1",
+									"host": [
+										"{{servidor}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"documento",
+										"1"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "4.3.2 - (Editor) No puede borrar el Documento raíz",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"El código de la respuesta no es 202\", function () {\r",
+											"    pm.expect(pm.response.code).to.not.equal(202);\r",
+											"})\r",
+											"\r",
+											"pm.test(\"El código de la respuesta es 403\", function () {\r",
+											"    pm.expect(pm.response.code).to.equal(403);\r",
+											"})\r",
+											"\r",
+											"pm.test(\"Respuesta recibida\", function () {\r",
+											"    pm.response.to.be.withBody;\r",
+											"})\r",
+											"\r",
+											"pm.test(\"La respuesta es un JSON\", function () {\r",
+											"    pm.response.to.be.json;\r",
+											"})\r",
+											"\r",
+											"pm.test(\"He recibido un error correctamente formado\", function () {\r",
+											"    const respuestaJson = pm.response.json();\r",
+											"    pm.expect(respuestaJson).to.be.an(\"object\");\r",
+											"    pm.expect(respuestaJson.código).to.be.a(\"number\");\r",
+											"    pm.expect(respuestaJson.estado).to.be.a(\"string\");\r",
+											"    pm.expect(respuestaJson.estado).to.equal(\"error\");\r",
+											"    pm.expect(respuestaJson.mensaje).to.be.an(\"string\");\r",
+											"    pm.expect(respuestaJson.mensaje).to.equal(\"Acción prohibida.\");\r",
+											"})"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{servidor}}/api/v1/documento/0",
+									"host": [
+										"{{servidor}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"documento",
+										"0"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "4.4 - Cierra sesión",
+					"item": [
+						{
+							"name": "4.4.1 - Cierra sesión",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"El código de la respuesta es 200\", function () {\r",
+											"    pm.expect(pm.response.code).to.equal(200);\r",
+											"})\r",
+											"\r",
+											"pm.test(\"Respuesta recibida\", function () {\r",
+											"    pm.response.to.be.withBody;\r",
+											"})\r",
+											"\r",
+											"pm.test(\"La respuesta es un JSON\", function () {\r",
+											"    pm.response.to.be.json;\r",
+											"})\r",
+											"\r",
+											"pm.test(\"He recibido un objeto correctamente formado\", function () {\r",
+											"    const respuestaJson = pm.response.json();\r",
+											"    pm.expect(respuestaJson).to.be.an(\"object\");\r",
+											"    pm.expect(respuestaJson.código).to.be.undefined;\r",
+											"    pm.expect(respuestaJson.estado).to.be.undefined;\r",
+											"    pm.expect(respuestaJson.mensaje).to.be.an(\"string\");\r",
+											"    pm.expect(respuestaJson.mensaje).to.equal(\"Sesión cerrada.\");\r",
+											"})"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": {
+									"raw": "{{servidor}}/api/v1/sesión",
+									"host": [
+										"{{servidor}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"sesión"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "5 - Rol de Administrador",
+			"item": [
+				{
+					"name": "5.1 - Obtén acreditación de Administrador",
+					"item": [
+						{
+							"name": "5.1.1 - (Administrador) Crea sesión",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"El código de la respuesta es 200\", function () {\r",
+											"    pm.expect(pm.response.code).to.equal(200);\r",
+											"})\r",
+											"\r",
+											"pm.test(\"Respuesta recibida\", function () {\r",
+											"    pm.response.to.be.withBody;\r",
+											"})\r",
+											"\r",
+											"pm.test(\"La respuesta es un JSON\", function () {\r",
+											"    pm.response.to.be.json;\r",
+											"})\r",
+											"\r",
+											"pm.test(\"He recibido un objeto correctamente formado\", function () {\r",
+											"    const respuestaJson = pm.response.json();\r",
+											"    pm.expect(respuestaJson).to.be.an(\"object\");\r",
+											"    pm.expect(respuestaJson.código).to.be.undefined;\r",
+											"    pm.expect(respuestaJson.estado).to.be.undefined;\r",
+											"    pm.expect(respuestaJson.mensaje).to.be.an(\"string\");\r",
+											"    pm.expect(respuestaJson.mensaje).to.equal(\"Acceso concedido.\");\r",
+											"})"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"usuario\": \"Administrador\",\r\n    \"clave\": \"123456\"\r\n}"
+								},
+								"url": {
+									"raw": "{{servidor}}/api/v1/sesión",
+									"host": [
+										"{{servidor}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"sesión"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "5.2 - Administrador tiene acceso completo a la gestión de Usuarios",
+					"item": [
+						{
+							"name": "5.2.1 - (Administrador) Puede leer la lista de usuarios",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"El código de la respuesta es 200\", function () {\r",
+											"    pm.expect(pm.response.code).to.equal(200);\r",
+											"})\r",
+											"\r",
+											"pm.test(\"Respuesta recibida\", function () {\r",
+											"    pm.response.to.be.withBody;\r",
+											"})\r",
+											"\r",
+											"pm.test(\"La respuesta es un JSON\", function () {\r",
+											"    pm.response.to.be.json;\r",
+											"})\r",
+											"\r",
+											"pm.test(\"He recibido una lista de Usuarios correctamente formada\", function () {\r",
+											"    const respuestaJson = pm.response.json();\r",
+											"    pm.expect(respuestaJson).to.be.an(\"array\");\r",
+											"    pm.expect(respuestaJson.length).to.be.a(\"number\");\r",
+											"    for(let i = 0; i < respuestaJson.length; i++)\r",
+											"    {\r",
+											"        pm.expect(respuestaJson[i]).to.be.an(\"object\");\r",
+											"        pm.expect(respuestaJson[i].clave).to.be.a(\"string\");\r",
+											"        pm.expect(respuestaJson[i].roles).to.be.an(\"array\");\r",
+											"        pm.expect(respuestaJson[i].id).to.be.a(\"number\");\r",
+											"        for(let j = 0; j < respuestaJson[i].roles.length; j++)\r",
+											"        {\r",
+											"            let rol = respuestaJson[i].roles[j]\r",
+											"            pm.expect(rol).to.be.a(\"string\");\r",
+											"            let tiene_rol_correcto = (rol.includes('Administrador') || rol.includes('Editor'));\r",
+											"            pm.expect(tiene_rol_correcto).to.be.true;\r",
+											"        }\r",
+											"    }\r",
+											"})"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{servidor}}/api/v1/usuarios",
+									"host": [
+										"{{servidor}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"usuarios"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "5.2.2 - (Administrador) Puede crear un nuevo usuario",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"El código de la respuesta es 200\", function () {\r",
+											"    pm.expect(pm.response.code).to.equal(200);\r",
+											"})\r",
+											"\r",
+											"pm.test(\"Respuesta recibida\", function () {\r",
+											"    pm.response.to.be.withBody;\r",
+											"})\r",
+											"\r",
+											"pm.test(\"La respuesta es un JSON\", function () {\r",
+											"    pm.response.to.be.json;\r",
+											"})\r",
+											"\r",
+											"pm.test(\"He recibido una confirmación correctamente formada con el ID del nuevo usuario\", function () {\r",
+											"    const respuestaJson = pm.response.json();\r",
+											"    pm.expect(respuestaJson).to.be.an(\"object\");\r",
+											"    pm.expect(respuestaJson.estado).to.be.a(\"string\");\r",
+											"    pm.expect(respuestaJson.estado).to.equal(\"ok\");\r",
+											"    pm.expect(respuestaJson.id).to.be.a(\"number\");\r",
+											"    if(respuestaJson.id)\r",
+											"    {\r",
+											"        pm.collectionVariables.set(\"id_usuario_creado\", respuestaJson.id.toString());\r",
+											"        postman.setNextRequest(\"5.2.3 - (Administrador) Puede leer un usuario con su ID\");\r",
+											"    }\r",
+											"    else\r",
+											"    {\r",
+											"        postman.setNextRequest(\"5.3.1 - Cierra sesión\");\r",
+											"    }\r",
+											"})"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"id\": 0,\r\n    \"nombre\": \"usuario288\",\r\n    \"clave\": \"\",\r\n    \"roles\": []\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{servidor}}/api/v1/usuario",
+									"host": [
+										"{{servidor}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"usuario"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "5.2.3 - (Administrador) Puede leer un usuario con su ID",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"El código de la respuesta es 200\", function () {\r",
+											"    pm.expect(pm.response.code).to.equal(200);\r",
+											"})\r",
+											"\r",
+											"pm.test(\"Respuesta recibida\", function () {\r",
+											"    pm.response.to.be.withBody;\r",
+											"})\r",
+											"\r",
+											"pm.test(\"La respuesta es un JSON\", function () {\r",
+											"    pm.response.to.be.json;\r",
+											"})\r",
+											"\r",
+											"const respuestaJson = pm.response.json();\r",
+											"pm.test(\"He recibido un error correctamente formado\", function () {\r",
+											"    pm.expect(respuestaJson).to.be.an(\"object\");\r",
+											"    pm.expect(respuestaJson.id).to.be.a(\"number\");\r",
+											"    pm.expect(respuestaJson.nombre).to.be.a(\"string\");\r",
+											"    pm.expect(respuestaJson.clave).to.be.a(\"string\");\r",
+											"    pm.expect(respuestaJson.roles).to.be.an(\"array\");\r",
+											"    for(let i = 0; i < respuestaJson.roles.length; i++)\r",
+											"    {\r",
+											"        let rol = respuestaJson.roles[i]\r",
+											"        pm.expect(rol).to.be.a(\"string\");\r",
+											"        let tiene_rol_correcto = (rol.includes('Administrador') || rol.includes('Editor'));\r",
+											"        pm.expect(tiene_rol_correcto).to.be.true;\r",
+											"    }\r",
+											"})\r",
+											"\r",
+											"pm.test(\"He recibido un Usuario con el ID especificado\", function () {\r",
+											"    pm.expect(respuestaJson.id.toString()).to.equal(pm.collectionVariables.get(\"id_usuario_creado\"));\r",
+											"})"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{servidor}}/api/v1/usuario/{{id_usuario_creado}}",
+									"host": [
+										"{{servidor}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"usuario",
+										"{{id_usuario_creado}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "5.2.4 - (Administrador) Puede editar un usuario con su ID",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"El código de la respuesta es 200\", function () {\r",
+											"    pm.expect(pm.response.code).to.equal(200);\r",
+											"})\r",
+											"\r",
+											"pm.test(\"Respuesta recibida\", function () {\r",
+											"    pm.response.to.be.withBody;\r",
+											"})\r",
+											"\r",
+											"pm.test(\"La respuesta es un JSON\", function () {\r",
+											"    pm.response.to.be.json;\r",
+											"})\r",
+											"\r",
+											"\r",
+											"const respuestaJson = pm.response.json();\r",
+											"pm.test(\"He recibido un error correctamente formado\", function () {\r",
+											"    pm.expect(respuestaJson).to.be.an(\"object\");\r",
+											"    pm.expect(respuestaJson.id).to.be.a(\"number\");\r",
+											"    pm.expect(respuestaJson.nombre).to.be.a(\"string\");\r",
+											"    pm.expect(respuestaJson.clave).to.be.a(\"string\");\r",
+											"    pm.expect(respuestaJson.roles).to.be.an(\"array\");\r",
+											"    for(let i = 0; i < respuestaJson.roles.length; i++)\r",
+											"    {\r",
+											"        let rol = respuestaJson.roles[i]\r",
+											"        pm.expect(rol).to.be.a(\"string\");\r",
+											"        let tiene_rol_correcto = (rol.includes('Administrador') || rol.includes('Editor'));\r",
+											"        pm.expect(tiene_rol_correcto).to.be.true;\r",
+											"    }\r",
+											"})\r",
+											"\r",
+											"pm.test(\"He recibido un Usuario con el ID especificado\", function () {\r",
+											"    pm.expect(respuestaJson.id.toString()).to.equal(pm.collectionVariables.get(\"id_usuario_creado\"));\r",
+											"})"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "PATCH",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"id\": 0,\r\n    \"nombre\": \"usuario288\",\r\n    \"clave\": \"\",\r\n    \"roles\": []\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{servidor}}/api/v1/usuario/{{id_usuario_creado}}",
+									"host": [
+										"{{servidor}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"usuario",
+										"{{id_usuario_creado}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "5.2.5 - (Administrador) Puede borrar un usuario con su ID",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"El código de la respuesta es 202\", function () {\r",
+											"    pm.expect(pm.response.code).to.equal(202);\r",
+											"})"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{servidor}}/api/v1/usuario/{{id_usuario_creado}}",
+									"host": [
+										"{{servidor}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"usuario",
+										"{{id_usuario_creado}}"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "5.3 - Cierra sesión",
+					"item": [
+						{
+							"name": "5.3.1 - Cierra sesión",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"El código de la respuesta es 200\", function () {\r",
+											"    pm.expect(pm.response.code).to.equal(200);\r",
+											"})\r",
+											"\r",
+											"pm.test(\"Respuesta recibida\", function () {\r",
+											"    pm.response.to.be.withBody;\r",
+											"})\r",
+											"\r",
+											"pm.test(\"La respuesta es un JSON\", function () {\r",
+											"    pm.response.to.be.json;\r",
+											"})\r",
+											"\r",
+											"pm.test(\"He recibido un objeto correctamente formado\", function () {\r",
+											"    const respuestaJson = pm.response.json();\r",
+											"    pm.expect(respuestaJson).to.be.an(\"object\");\r",
+											"    pm.expect(respuestaJson.código).to.be.undefined;\r",
+											"    pm.expect(respuestaJson.estado).to.be.undefined;\r",
+											"    pm.expect(respuestaJson.mensaje).to.be.an(\"string\");\r",
+											"    pm.expect(respuestaJson.mensaje).to.equal(\"Sesión cerrada.\");\r",
+											"})"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": {
+									"raw": "{{servidor}}/api/v1/sesión",
+									"host": [
+										"{{servidor}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"sesión"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "id_doc_creado",
+			"value": "288"
+		},
+		{
+			"key": "docs_recibidos",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "id_usuario_creado",
+			"value": "288"
+		},
+		{
+			"key": "id_doc_que_pedir",
+			"value": "0"
+		}
+	]
+}
