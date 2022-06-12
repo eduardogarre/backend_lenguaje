@@ -822,7 +822,12 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"usuario\": \"Admin\",\r\n    \"clave\": \"123456\"\r\n}"
+							"raw": "{\r\n    \"usuario\": \"hola\",\r\n    \"clave\": \"{{clave_usuario}}\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
 						},
 						"url": {
 							"raw": "{{servidor}}/api/v1/sesión",
@@ -878,7 +883,12 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"usuario\": \"Administrador\",\r\n    \"clave\": \"1234\"\r\n}"
+							"raw": "{\r\n    \"usuario\": \"{{nombre_usuario}}\",\r\n    \"clave\": \"hola\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
 						},
 						"url": {
 							"raw": "{{servidor}}/api/v1/sesión",
@@ -931,7 +941,12 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"usuario\": \"Administrador\",\r\n    \"clave\": \"123456\"\r\n}"
+							"raw": "{\r\n    \"usuario\": \"{{nombre_usuario}}\",\r\n    \"clave\": \"{{clave_usuario}}\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
 						},
 						"url": {
 							"raw": "{{servidor}}/api/v1/sesión",
@@ -1146,7 +1161,12 @@
 								"header": [],
 								"body": {
 									"mode": "raw",
-									"raw": "{\r\n    \"usuario\": \"usuario\",\r\n    \"clave\": \"1234\"\r\n}"
+									"raw": "{\r\n    \"usuario\": \"{{nombre_usuario}}\",\r\n    \"clave\": \"{{clave_usuario}}\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
 								},
 								"url": {
 									"raw": "{{servidor}}/api/v1/sesión",
@@ -1928,7 +1948,7 @@
 								"header": [],
 								"body": {
 									"mode": "raw",
-									"raw": "{\r\n    \"usuario\": \"editor\",\r\n    \"clave\": \"1234\"\r\n}",
+									"raw": "{\r\n    \"usuario\": \"{{nombre_editor}}\",\r\n    \"clave\": \"{{clave_editor}}\"\r\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -2189,7 +2209,7 @@
 								"header": [],
 								"body": {
 									"mode": "raw",
-									"raw": "{\r\n    \"id\": 1,\r\n    \"padre\": 0,\r\n    \"título\": \"Adiós\",\r\n    \"contenido\": \"olakase\",\r\n    \"hijos\": []\r\n}",
+									"raw": "{\r\n    \"id\": {{id_doc_creado}},\r\n    \"padre\": 0,\r\n    \"título\": \"Adiós\",\r\n    \"contenido\": \"olakase\",\r\n    \"hijos\": []\r\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -2464,7 +2484,12 @@
 								"header": [],
 								"body": {
 									"mode": "raw",
-									"raw": "{\r\n    \"usuario\": \"Administrador\",\r\n    \"clave\": \"123456\"\r\n}"
+									"raw": "{\r\n    \"usuario\": \"{{nombre_admin}}\",\r\n    \"clave\": \"{{clave_admin}}\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
 								},
 								"url": {
 									"raw": "{{servidor}}/api/v1/sesión",
