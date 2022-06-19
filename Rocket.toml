@@ -5,6 +5,7 @@ address = "0.0.0.0"
 limits = { forms = "8 MiB", json = "8 MiB" }
 admin = "Administrador"
 clave = "1234"
+# Clave de pruebas
 secret_key = "1e3182249313d8f2643354e839229a959ed12014ef99"
 
 ## set only when compiled in debug mode, i.e, `cargo build`
@@ -15,5 +16,6 @@ limits = { json = "16 MiB" }
 ## set only when compiled in release mode, i.e, `cargo build --release`
 ## don't use this secret_key! generate your own and keep it private!
 [release]
-# secret_key = ""
+# Hay que añadir la clave real para ejecutar en producción
+#secret_key = ""
 clave = "abcd"
